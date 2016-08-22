@@ -1,0 +1,72 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-battery-status": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-contacts": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-device-motion": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-device-orientation": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-geolocation": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-globalization": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-media-capture": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-vibration": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
+        }
+    },
+    "dependent_plugins": {}
+}
