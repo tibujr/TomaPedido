@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, maximum-scale=1, minimum-scale=1, user-scalable=no, initial-scale=1, width=device-width, height=device-height" />
+    <!--<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />-->
+
+    <!--CSS-->
+    <link type="text/css" rel="stylesheet" href="css/jquery-mobile/jquery.mobile-1.3.2.min.css" />
+    <link type="text/css" rel="stylesheet" href="css/materialize/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="css/general.css" />
+    <link type="text/css" rel="stylesheet" href="css/palette.css" />
+    
+    <!--JS-->
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-mobile/jquery.mobile-1.3.2.min.js"></script>
+    <script type="text/javascript" src="js/materialize/materialize.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/venta.js"></script>
+    
+    <title>Toma Pedido</title>
+
+</head>
+
+<body class="">
+
+    <div data-role="page" id="login">
+        <div data-role="header">
+            <h1>LOGIN</h1>
+        </div>
+        <div data-role="content" id="cont" >  
+            <div class="row">
+                <div class="col s12"> 
+                    <form id="formularioLogin" >
+                        <label> Usuario </label>
+                        <input type="text" id="usuario" name="usuario" value="gnoles">
+                        <label> Password </label>
+                        <input type="password" id="clave" name="clave" value="123456">
+                        <a id="aceptarLogin" class="col s12 waves-effect waves-light btn-large">INGRESAR</a>
+                    </form> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-role="page" id="home">
+        <div data-role="header" class="dark-primary-color">
+            <h1>Bienvenido</h1>
+        </div>
+        <!--<nav>
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo">Logo</a>
+            </div>
+        </nav>-->
+        <div data-role="content" style="margin-top: 6px;">
+            <div class="row">
+                <div class="col s12">
+                    <ul class="tabs" style="margin-bottom: 5px;">
+                        <li class="tab col s3"><a class=" active" href="#ventas">VENTAS</a></li>
+                        <li class="tab col s3"><a href="#cobranza">COBRANZA</a></li>
+                        <li class="tab col s3"><a href="#despacho">DESPACHO</a></li>
+                    </ul>
+                </div>
+                <div id="ventas" class="col s12" >
+                    <div class="col s12" ><a class="waves-effect waves-light btn" href="#nuevaVenta">NUEVO</a></div>
+                    <div class="col s12"> 
+                           <ul class="collapsible" data-collapsible="accordion">
+                            <li>
+                              <div class="collapsible-header"><span class="razonSocialVentaGeneral">ROINET SAC</span><span class="precioDetalleVentaGeneral">S/523.00</span> </div>
+                              <div class="collapsible-body bgGray">
+                                <table class="">
+                                    <thead>
+                                      <tr>
+                                          <th data-field="id">Producto</th>
+                                          <th data-field="name">Importe</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td><b>(10)</b> Alvin Alvin Alvin Alvin Alvin</td>
+                                        <td>S/80.87</td>
+                                      </tr>
+                                      <tr>
+                                        <td><b>(11)</b> Jellybean Jellybean Jellybean</td>
+                                        <td>S/43.76</td>
+                                      </tr>
+                                      <tr>
+                                        <td><b>(20)</b> Lollipop Lollipop Lollipop</td>
+                                        <td>S/347.00</td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="collapsible-header"><span class="razonSocialVentaGeneral">LA LUJURIA </span><span class="precioDetalleVentaGeneral">S/523.00</span></div>
+                              <div class="collapsible-body bgGray"><p>Lorem ipsum dolor sit amet.</p></div>
+                            </li>
+                            <li>
+                              <div class="collapsible-header"><span class="razonSocialVentaGeneral">CANTO RODADO CANTO RODADO CANTO RODADO CANTO RODADO</span><span class="precioDetalleVentaGeneral">S/523.00</span></div>
+                              <div class="collapsible-body bgGray"><p>Lorem ipsum dolor sit amet.</p></div>
+                            </li>
+                          </ul>
+                    </div>
+                </div>
+                <div id="cobranza" class="col s12">
+                    aqui Test 2
+                </div>
+                <div id="despacho" class="col s12">
+                    aqui Test 3
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-role="page" id="nuevaVenta">
+        <div data-role="header" class="dark-primary-color">
+            <h1>Nueva Venta</h1>
+        </div>
+        <div data-role="content" style="margin-top: 6px;">
+            <div class="row">
+                <div class="col s12"> 
+                    <form>
+                        <div class="col s9" >
+                            <label> RUC </label>
+                            <input  type="text" id="usuario" name="usuario" value="20948372810">
+                        </div>
+                        <div class="col s3">
+                            <a class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">search</i></a>
+                        </div>
+                        <div class="col s9" >
+                            <label> PRODUCTO </label>
+                            <input  type="text" id="usuario" name="usuario" value="004563K2">
+                        </div>
+                        <div class="col s3">
+                            <div class="botonChico accent-color waves-effect"><i class="material-icons">search</i></div>
+                            <div class="botonChico accent-color waves-effect"><i class="material-icons">add</i></div>
+                        </div>
+                        <div class="col s12"> 
+                            <table class="striped">
+                                <thead>
+                                  <tr>
+                                      <th data-field="id">Producto</th>
+                                      <th data-field="name">Precio</th>
+                                      <th data-field="price">Cantidad</th>
+                                      <!--<th data-field="price">Importe</th>-->
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  <tr>
+                                    <td>Alvin Alvin Alvin Alvin Alvin</td>
+                                    <td>S/80.87</td>
+                                    <td class="inputChico"><input type="number" value="10" maxlength="4"></td>
+                                    <!--<td>S/808.7</td>-->
+                                  </tr>
+                                  <tr>
+                                    <td>Jellybean Jellybean Jellybean</td>
+                                    <td>S/43.76</td>
+                                    <td class="inputChico"><input type="number" value="8" maxlength="4"></td>
+                                    <!--<td>S/305.45</td>-->
+                                  </tr>
+                                  <tr>
+                                    <td>Lollipop Lollipop Lollipop</td>
+                                    <td>S/347.00</td>
+                                    <td class="inputChico"><input type="number" value="100" maxlength="4"></td>
+                                    <!--<td>S/3470.00</td>-->
+                                  </tr>
+                                  <!--TOTAL-->
+                                  <tr>
+                                    <td colspan="2" style="text-align:right;"><b>Total</b></td>
+                                    <td>S/4020.45</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                        </div>
+                        <div class="col s12" style="margin-bottom:10px;"> <div class="divider"></div></div>
+                        <!--<div class="col s12"> -->
+                            <div class="col s6"> 
+                                <a class="col s12 waves-effect waves-light btn-large">ACEPTAR</a>
+                            </div>
+                            <div class="col s6"> 
+                                <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
+                            </div>
+                        <!--</div>-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+</body>
+
+</html>
