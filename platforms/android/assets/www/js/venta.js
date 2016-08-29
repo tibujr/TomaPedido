@@ -91,6 +91,14 @@ $(document).ready(function () {
 
 	$("body").on('change', '#opcion-cliente', function(e){
 		var a = $(this).val();
+		console.log(a)
+		switch(a) {
+		    case "1":
+		        $.mobile.changePage("#FormNuevoCliente");
+		        break;
+		    default:
+		        break;
+		}
 	});
 
 
