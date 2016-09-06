@@ -19,7 +19,7 @@ $(document).ready(function () {
 				//dataType: 'xml',
 				data: {user: datosUsuario, password:datosPassword},
 				success: function(data){
-					var dt = convertirJSON(data);
+					var dt = convertirJSON(data); 
 					console.log(dt)
 				},
 				error: function(data){
@@ -65,13 +65,36 @@ $(document).ready(function () {
 
 	$("body").on('click', '#aceptarFrmVenta', function(e){
 		//obtener codigo del producto y usarlo para agregar a la nueva venta
+		Materialize.toast('Venta exitosa.', 3000)
 		$.mobile.changePage("#home");
 	});
 
 	$("body").on('click', '#aceptarDespacho', function(e){
+		Materialize.toast('Despacho exitoso.', 3000)
 		$.mobile.changePage("#home");
 	});
+
+	$("body").on('click', '#logout', function(e){
+		//history.go(0)
+		$.mobile.changePage("#login");
+	});
+
+	$("body").on('click', '#aceptarSincronizar', function(e){
+		//history.go(0)
+		Materialize.toast('Sincronizado correctamente.', 3000)
+		$.mobile.back();
+ 		return false;
+	});
+
+	$("body").on('click', '#marca-asistencia', function(e){
+		//history.go(0)
+		Materialize.toast('Asistencia registrada.', 3000)
+		//$.mobile.back();
+ 		return false;
+	});
 	
+	
+
 	var leyendaOk = true;
 	$("body").on('click', '#leyenda-plus', function(e){
 		
@@ -89,12 +112,19 @@ $(document).ready(function () {
 		console.log("refrescar")
 	});
 
+	$("body").on('click', '#btnVenderClienteNR', function(e){
+		console.log( $("#nom-empNR").val());
+		$.mobile.changePage("#FormNuevaVenta");
+	});
+
 	$("body").on('change', '#opcion-cliente', function(e){
 		var a = $(this).val();
-		console.log(a)
 		switch(a) {
 		    case "1":
 		        $.mobile.changePage("#FormNuevoCliente");
+		        break;
+		    case "2":
+		        $.mobile.changePage("#clienteNoRuta");
 		        break;
 		    default:
 		        break;
@@ -104,14 +134,38 @@ $(document).ready(function () {
 
 	$("body").on('change', '.rdb-tipo-pago', function(e){
 		//$("#radio_1").prop("checked", true) 
-		var a = $(this).val();
-		if( $(this).val() == 'adelanto')
+		var tipo = $(this).val();
+		if( tipo == 'adelanto')
 		{
 			$("#adelanto-cont").show(200);
 		}else{
 			$("#adelanto-cont").hide(200);
 		}
 	});
+
+	$("body").on('change', '.rdb-tipo-pago-dpc', function(e){
+		//$("#radio_1").prop("checked", true) 
+		var tipo = $(this).val();
+		if( tipo == 'adelanto')
+		{
+			$("#adelanto-cont-dpc").show(200);
+		}else{
+			$("#adelanto-cont-dpc").hide(200);
+		}
+	});
+
+
+	$("body").on('change', '.rdb-tipo-nc-doc', function(e){
+		//$("#radio_1").prop("checked", true) 
+		var tipo = $(this).val();
+		if( tipo == 'ruc')
+		{
+			$(".depen-dni").show(200);
+		}else if( tipo == 'dni'){
+			$(".depen-dni").hide(200);
+		}
+	});
+	
 
 
 
@@ -127,6 +181,23 @@ $(document).ready(function () {
 		});
 
 		$('select').material_select();//iniciar todos los select
+
+		$('input.autocomplete').autocomplete({
+		    data: {
+		      	"Apple": null,
+		      	"Microsoft": null,
+		      	"Google": 'http://placehold.it/250x250'
+		    }
+	  	});
+
+		/*menu cabecera*/
+	  	$('.button-collapse').sideNav({
+		      menuWidth: 200, // Default is 240
+		      edge: 'right', // Choose the horizontal origin
+		      closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
+		    }
+		  );
+
 	}
 
 	/*METODOS QUE SE EJECUTARAN AL INICIAR EL APLICATIVO*/

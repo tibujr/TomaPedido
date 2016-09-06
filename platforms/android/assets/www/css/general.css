@@ -22,7 +22,86 @@
   -webkit-font-smoothing: antialiased;
 }
 
+li, a{
+    text-shadow: none;
+}
+
 /*INICIO*/
+
+
+.userView {
+    overflow: hidden;
+    position: relative;
+    padding: 32px 32px 0;
+    margin-bottom: 8px;
+}
+
+.userView .background {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.userView a {
+    height: auto;
+    padding: 0;
+}
+
+.userView .circle {
+    height: 64px;
+    width: 64px;
+    background: white;
+    padding: 3px;
+}
+
+.userView a {
+    height: auto;
+    padding: 0;
+}
+
+.userView .name {
+    margin-top: 16px;
+    font-weight: 500;
+    padding-bottom: 16px;
+    text-align: left;
+}
+
+
+
+.space-cab img{
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-opcion-header{
+    text-shadow: none;
+    color: #ffffff;
+    width: 100%;
+    float: left;
+}
+
+.btn-opcion-header i{
+    font-size: 30px;
+}
+
+.cont-cab-gen{
+    display: inline-block;
+    /*margin: 6px 0;*/
+    min-height: 50px;
+    width: 100%;
+    font-size: 0;
+}
+
+.space-cab {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 14px;
+}
 
 .botonChico {
   display: inline-block;
@@ -37,18 +116,24 @@
   width: 20%;
 }
 
-.inputChico input{
+.inputChico input, .inputMediano input{
   text-align: center;
   margin: 0;
   height: 25px;
+  font-size: 13px;
 }
 
-.razonSocialVentaGeneral{
+.razonSocialVentaGeneral, .codFacturaDV{
   width: 70%;
   display: inline-block;
   line-height: 19px;
   padding: 10px 0;
   vertical-align: middle;
+}
+
+.codFacturaDV{
+  width: 100%;
+  font-size: 14px;
 }
 
 .estadoEmpresa{
@@ -146,10 +231,85 @@
     border-bottom: 1px solid #e4e4e4;
 }
 
+.margin-cero{
+  margin: 0 !important;
+}
+
+.raya-bajo {
+  border-bottom: 1px solid #f3f3f3;
+}
+
+.delete-producto {
+    background: red;
+    color: white;
+    padding: 1px 0;
+    width: 20px;
+    text-align: center;
+    display: inline-block;
+    border-radius: 10px;
+}
+
 /*FIN INICIO*/
 
 
 /*DESPACHO*/
+.cont-dato-emp-cab {
+    display: inline-block;
+    width: 80%;
+}
+
+.ico-dato-emp-cab {
+    display: inline-block;
+    width: 20%;
+}
+
+.empresa-ico{
+    font-size: 28px;
+    color: #455A64;
+}
+
+.dato-emp-cab{
+    display: inline-block;
+    font-size: 14px;
+    width: 100%;
+}
+
+.pagoCredito, .pagoContado{
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.pagoCredito{
+  background: #FF5252;
+}
+
+.pagoContado{
+  background: #8BC34A;
+}
+
+.label-titulo{
+  padding: 0 0.75rem;
+  font-size: 0.8rem;
+}
+
+.cuerpo-vdes2 ul li{
+    margin: 6px 0;
+}
+
+.precio-fac-dpc{
+    display: inline-block;
+    width: 34%;
+    font-size: 13px;
+}
+
+.cuerpo-vdes ul p{
+    display: inline-block;
+    width: 65%;
+}
 
 .cont-vdes {
     display: inline-block;
@@ -175,15 +335,15 @@
 }
 
 .item-izq-vdes {
-    width: 75%;
+    width: 65%;
 }
 
 .item-der-vdes {
-    width: 25%;
+    width: 34%;
 }
 
 .pie-vdes {
-    background-color: #cfd8dc;
+    background-color: #eaf1f5;
     color: #607d8b;
 }
 
@@ -225,26 +385,108 @@ textarea.materialize-textarea {
     color: #ffffff;
 }
 
+.inputMediano{
+  width: 25%;
+}
+
 /*FIN DESPACHO*/
 
 /* ENTREGA */
+.contenedor-demp2 ul p{
+    padding: 2% 5% 2% 10%;
+  }
+
+.itm-fac-pagar{
+    box-shadow: none;
+    margin: 0;
+    border-left: none;
+    border-right: none;
+}
 
 p.cont-rdb {
     display: inline-block;
-    padding: 5px 3%;
+    /*padding: 5px 1%;*/
     margin: 0 2px;
 }
 
-#adelanto-cont {
+/*#adelanto-cont {
     padding-top: 15px;
     border-top: 1px solid #e4e4e4;
-}
+}*/
 
 /* FIN ENTREGA*/
 
+/* VENTAS DEL DIA*/
+
+.cuerpo-vdes-vd ul li{
+    font-size: 14px;
+    margin: 4px 0;
+    padding: 5px 0;
+}
+
+.cuerpo-vdes-vd ul li i{
+    vertical-align: middle;
+    float: right;
+}
+
+.cuerpo-vdes-vd ul li span{
+    margin-right: 7px;
+}
+
+/* FIN VENTAS DEL DIA*/
+
+
+/* PROMOCIONES */
+
+.promo-der, .promo-izq {
+    width: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 14px;
+    padding: 4% 1%;
+}
+
+.promo-der .label-titulo {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+span.promo-texto {
+    padding: 0 1rem;
+    width: 100%;
+    display: inline-block;
+}
+
+.item-promo {
+    border-top: 1px solid #e4e4e4;
+    border-bottom: 1px solid #e4e4e4;
+    margin-bottom: 10px;
+}
+
+.nombre-prod-promo{
+    font-size: 20px;
+    text-align: center;
+    line-height: 22px;
+    margin-bottom: 7px;
+}
+
+.fecha-prod-promo{
+    font-size: 13px;
+    color: #F44336;
+}
+
+/*.promo-det {
+    font-size: 17px;
+    font-weight: bold;
+}*/
+
+/* FIN PROMOCIONES */
+
 
 /*MATERIALIZE*/
-
+[type="radio"]:not(:checked)+label, [type="radio"]:checked+label{
+  font-size: .9rem;
+}
 .ui-select{
   display: none;
 }
