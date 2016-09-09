@@ -93,7 +93,6 @@ $(document).ready(function () {
  		return false;
 	});
 	
-	
 
 	var leyendaOk = true;
 	$("body").on('click', '#leyenda-plus', function(e){
@@ -108,14 +107,22 @@ $(document).ready(function () {
 		
 	});
 
+
 	$("body").on('click', '#btn-Refresh', function(e){
 		console.log("refrescar")
 	});
+
 
 	$("body").on('click', '#btnVenderClienteNR', function(e){
 		console.log( $("#nom-empNR").val());
 		$.mobile.changePage("#FormNuevaVenta");
 	});
+
+
+	$("body").on('click', '.precio-select-dv', function(e){
+		$('#modal1').openModal();
+	});
+	
 
 	$("body").on('change', '#opcion-cliente', function(e){
 		var a = $(this).val();

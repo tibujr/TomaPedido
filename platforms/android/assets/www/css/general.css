@@ -28,6 +28,11 @@ li, a{
 
 /*INICIO*/
 
+p.codClienteVentaGeneral {
+    margin: 0px;
+    font-size: 12px;
+    color: #a5a5a5;
+}
 
 .userView {
     overflow: hidden;
@@ -124,7 +129,8 @@ li, a{
 }
 
 .razonSocialVentaGeneral, .codFacturaDV{
-  width: 70%;
+  /*width: 70%;*/
+  width: 60%;
   display: inline-block;
   line-height: 19px;
   padding: 10px 0;
@@ -247,6 +253,24 @@ li, a{
     text-align: center;
     display: inline-block;
     border-radius: 10px;
+}
+
+td.precio-select-dv span {
+    display: block;
+    text-align: right;
+    color: #272727;
+}
+
+.cab-pop-sel-dv{
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    text-align: center;
+    display: block;
+    font-weight: bold;
+}
+
+.cuerpo-pop-sel-dv{
+  
 }
 
 /*FIN INICIO*/
@@ -433,6 +457,14 @@ p.cont-rdb {
     margin-right: 7px;
 }
 
+.cbodir-con{
+  margin-top: 18px;
+}
+
+.cbodir-con input.select-dropdown{
+  margin: 0;
+}
+
 /* FIN VENTAS DEL DIA*/
 
 
@@ -484,6 +516,13 @@ span.promo-texto {
 
 
 /*MATERIALIZE*/
+
+.cont-emp-inicio .collapsible-header i {
+    margin: 0;
+    display: inline-block;
+    max-width: 15%;
+}
+
 [type="radio"]:not(:checked)+label, [type="radio"]:checked+label{
   font-size: .9rem;
 }

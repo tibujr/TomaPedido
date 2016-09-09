@@ -120,10 +120,14 @@
                         </div>
                     </div>
                     <div class="col s12"> 
-                           <ul class="collapsible" data-collapsible="accordion">
+                           <ul class="collapsible cont-emp-inicio" data-collapsible="accordion">
                             <li>
                                 <div class="collapsible-header">
-                                    <span class="razonSocialVentaGeneral">ROINET SAC</span>
+                                    <i class="material-icons">done</i>
+                                    <!--<div class="cont-dc-lst-ven">-->
+                                        <span class="razonSocialVentaGeneral"><p class="codClienteVentaGeneral">1002394545</p> ROINET SAC </span>
+                                        <!--<p class="codClienteVentaGeneral">1002394545</p>
+                                    </div>-->
                                     <div class="estadoEmpresa">
                                         <span class="conVenta"></span>
                                         <span class="conDespacho"></span>
@@ -162,7 +166,8 @@
                             </li>
                             <li>
                                 <div class="collapsible-header">
-                                    <span class="razonSocialVentaGeneral">LA LUJURIA </span>
+                                    <i class="material-icons">done</i>
+                                    <span class="razonSocialVentaGeneral"><p class="codClienteVentaGeneral">1002394546</p> LA LUJURIA </span>
                                     <div class="estadoEmpresa">
                                         <span class="conVenta"></span>
                                         <span class="conDespacho"></span>
@@ -192,7 +197,7 @@
                             </li>
                             <li>
                                 <div class="collapsible-header">
-                                    <span class="razonSocialVentaGeneral">CANTO RODADO CONSUTORES</span>
+                                    <span class="razonSocialVentaGeneral"><p class="codClienteVentaGeneral">1002394547</p>CANTO RODADO CONSUTORES</span>
                                     <div class="estadoEmpresa">
                                         <span class="conVenta"></span>
                                         <span class="conDeuda"></span>
@@ -332,18 +337,6 @@
                                           <label for="sinc-dv-cod-n3">Promociones</label>
                                         </p>
                                     </li>
-                                    <li>
-                                        <p>
-                                          <input type="checkbox" class="filled-in" id="sinc-dv-cod-n4" checked="checked" />
-                                          <label for="sinc-dv-cod-n4">Ventas no enviadas</label>
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <p>
-                                          <input type="checkbox" class="filled-in" id="sinc-dv-cod-n5" checked="checked" />
-                                          <label for="sinc-dv-cod-n5">Otros</label>
-                                        </p>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -368,14 +361,21 @@
                 <div class="col s12"> 
                     <form>
                         <div class="col s12" >
-                            <label> RAZON SOCIAL </label>
+                            <label> Razón social </label>
                             <input disabled class="margin-cero" type="text" id="usuario" name="usuario" value="Roinet SAC">
                         </div>
+                        <div class="input-field col s12 cbodir-con" style="margin-top: 18px;">
+                            <select id="direccion-entrega-dpc">
+                                <option value="1">Dirección 1</option>
+                                <option value="2">Dirección 2</option>
+                            </select>
+                            <label>Dirección de entrega</label>
+                        </div>
                         <div class="col s12" >
-                            <div><label> TIPO DE PAGO </label></div>
+                            <div><label> Tipo de pago </label></div>
                             <p class="cont-rdb">
                                 <input class="with-gap rdb-tipo-pago" name="rdb-tipo-pago-nv" type="radio" id="rdb-efectivo" value="efectivo" checked />
-                                <label for="rdb-efectivo">EFECTIVO</label>
+                                <label for="rdb-efectivo">CONTRAENTREGA</label>
                             </p>
                             <p class="cont-rdb">
                                 <input class="with-gap rdb-tipo-pago" name="rdb-tipo-pago-nv" type="radio" id="rdb-credito" value="credito" />
@@ -384,7 +384,7 @@
                             <div class="raya-bajo"></div>
                         </div>
                         <div class="col s12" >
-                            <div><label> TIPO DE VENTA </label></div>
+                            <div><label> Tipo de venta </label></div>
                             <p class="cont-rdb">
                                 <input class="with-gap rdb-tipo-pago" name="rdb-tipo-venta-nv" type="radio" id="rdb-boleta" value="boleta" checked />
                                 <label for="rdb-boleta">BOLETA</label>
@@ -396,8 +396,8 @@
                             <div class="raya-bajo"></div>
                         </div>
                         <div class="col s9" >
-                            <label> PRODUCTO </label>
-                            <input  type="text" id="usuario" name="usuario" value="004563K2">
+                            <label> Codigo de producto </label>
+                            <input  type="number" id="usuario" name="usuario" value="1021924">
                         </div>
                         <div class="col s3">
                             <div id="btnBuscarProducto" class="botonChico accent-color waves-effect"><i class="material-icons">search</i></div>
@@ -419,34 +419,51 @@
                                     <td><span class="delete-producto">X</span></td>
                                     <td>Producto 1</td>
                                     <!--<td>S/80.87</td>-->
-                                    <td class="inputMediano"><input type="number" value="80.87" maxlength="4"></td>
+                                    <!--<td class="inputMediano"><input type="number" value="80.87" maxlength="4"></td>-->
+                                    <td class="precio-select-dv"><span>800</span><span style="color: #ff5252;font-size: 14px;">750</span></td>
                                     <td class="inputChico"><input type="number" value="10" maxlength="4"></td>
-                                    <td>S/808.7</td>
+                                    <td>808.7</td>
                                   </tr>
                                   <tr>
                                     <td><span class="delete-producto">X</span></td>
                                     <td>Producto 2</td>
                                     <!--<td>S/43.76</td>-->
-                                    <td class="inputMediano"><input type="number" value="43.76" maxlength="4"></td>
+                                    <!--<td class="inputMediano"><input type="number" value="43.76" maxlength="4"></td>-->
+                                    <td class="precio-select-dv"><span >900</span><span style="color: #ff5252;font-size: 14px;">850</span></td>
                                     <td class="inputChico"><input type="number" value="8" maxlength="4"></td>
-                                    <td>S/305.45</td>
+                                    <td>305.45</td>
                                   </tr>
                                   <tr>
                                     <td><span class="delete-producto">X</span></td>
                                     <td>Producto 3</td>
                                     <!--<td>S/347.00</td>-->
-                                    <td class="inputMediano"><input type="number" value="347.00" maxlength="4"></td>
+                                    <!--<td class="inputMediano"><input type="number" value="347.00" maxlength="4"></td>-->
+                                    <td class="precio-select-dv"><span>1000</span><span style="color: #ff5252;font-size: 14px;">950</span></td>
                                     <td class="inputChico"><input type="number" value="100" maxlength="4"></td>
-                                    <td>S/3470.00</td>
+                                    <td>3470.00</td>
                                   </tr>
                                   <!--TOTAL-->
                                   <tr>
                                     <td colspan="4" style="text-align:right; font-size:14px;"><b>Total</b></td>
-                                    <td>S/4020.45</td>
+                                    <td>4020.45</td>
                                   </tr>
                                 </tbody>
                               </table>
                         </div>
+
+                          <!-- Modal Structure -->
+                          <div id="modal1" class="modal">
+                            <div class="modal-content">
+                              <span class="cab-pop-sel-dv">Tipo de descuento</span>
+                              <div class="cuerpo-pop-sel-dv"> 
+
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                            </div>
+                          </div>
+
                         <div class="col s12" style="margin-bottom:10px;"> <div class="divider"></div></div>
                         <!--<div class="col s12"> -->
                             <div class="col s6"> 
