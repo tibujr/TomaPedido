@@ -12,6 +12,7 @@ var app = {
     },
 
     onDeviceReady: function() {
+        
         app.receivedEvent('deviceready');
     },
 
@@ -39,5 +40,18 @@ var app = {
                 $("#err").html( JSON.stringify(data) );
             }
         });*/
+    },
+
+    getFecha: function() {
+        var dt = new Date();
+        var fech = dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
+        return fech;
+    },
+
+    getFechaHora: function() {
+        var dt = new Date();
+        var fech = dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate()+' '+dt.getHours()+':'+dt.getMinutes()+':'+dt.getSeconds();
+        return fech;
     }
+
 };

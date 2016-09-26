@@ -37,9 +37,9 @@
                 <div class="col s12"> 
                     <!--<form id="formularioLogin" >-->
                         <label> Usuario </label>
-                        <input type="text" id="usuario" name="usuario" value="gnoles">
+                        <input type="text" id="usuario" name="usuario" value="184">
                         <label> Password </label>
-                        <input type="password" id="clave" name="clave" value="123456">
+                        <input type="password" id="clave" name="clave" value="1111">
                         <div id="aceptarLogin" class="col s12 waves-effect waves-light btn-large">INGRESAR</div>
                     <!--</form> -->
                 </div>
@@ -60,11 +60,11 @@
                             <div class="userView">
                                 <img class="background" src="img/fondo.jpg">
                                 <a href=""><img class="circle" src="img/user.png"></a>
-                                <a href=""><span class="white-text name">Luis Deza</span></a>
+                                <a href=""><span class="white-text name" id="nombre-usuario-tp">Luis Deza</span></a>
                             </div>
                         </li>
                         <li><a href="javascript:void(0)" id="marca-asistencia" class="waves-effect"><i class="material-icons">spellcheck</i>Asistencia</a></li>
-                        <li><a href="#vendasDia" class="waves-effect"><i class="material-icons">work</i>Ventas del día</a></li>
+                        <li><a href="#ventasDia" class="waves-effect"><i class="material-icons">work</i>Ventas del día</a></li>
                         <li><div class="divider"></div></li>
                         <li><a class="subheader">SISTEMA</a></li>
                         <li><a href="#sistemaSincronizar" class="waves-effect"><i class="material-icons">settings_backup_restore</i>Sincronizar</a></li>
@@ -93,7 +93,10 @@
                           <option value="1">NUEVO CLIENTE</option>
                         </select>
                     </div>
-                    <div class="col s12" style="margin-bottom: 0;text-align: right;">
+                    <div class="col s6"  style="padding-right: 0;">
+                        <input type="text" class="margin-cero" id="buscar-ruta" name="buscar-ruta" placeholder="BUSCAR...">
+                    </div>
+                    <div class="col s6" style="margin-bottom: 0;text-align: right; padding: 0;">
                         <div class="leyenda">
                             <div class="cabecera">
                                 <span id="leyenda-plus" class="waves-effect">
@@ -120,113 +123,36 @@
                         </div>
                     </div>
                     <div class="col s12"> 
-                           <ul class="collapsible cont-emp-inicio" data-collapsible="accordion">
-                            <li>
-                                <div class="collapsible-header">
-                                    <i class="material-icons">done</i>
-                                    <!--<div class="cont-dc-lst-ven">-->
-                                        <span class="razonSocialVentaGeneral"><p class="codClienteVentaGeneral">1002394545</p> ROINET SAC </span>
-                                        <!--<p class="codClienteVentaGeneral">1002394545</p>
-                                    </div>-->
-                                    <div class="estadoEmpresa">
-                                        <span class="conVenta"></span>
-                                        <span class="conDespacho"></span>
-                                        <span class="conDeuda"></span>
-                                    </div>
-                                </div>
-                                <div class="collapsible-body bgGray">
-                                    <div style="padding:0 0.75rem;">
-                                        <a class="waves-effect botonOpciones accent-color" href="#FormNuevaVenta">VENDER</a>
-                                        <a class="waves-effect botonOpciones accent-color" href="#VistaDespachar">DESPACHAR</a>
-                                        <a class="waves-effect botonOpciones accent-color" href="#VistaCobrar">COBRAR</a>
-                                    </div>
-                                    <div class="contenedor-demp">
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">DIRECCION:</div>
-                                            <div class="val-detEmp">Calle Schell 343 Oficina 301 - Miraflores</div>
-                                        </div>
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">CONTACTO:</div>
-                                            <div class="val-detEmp">Rene Ramirez Guillen <br> 998736524</div>
-                                        </div>
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">DEUDA:</div>
-                                            <div class="val-detEmp">S/203 (18/07/2016)</div>
-                                        </div>
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">DESPACHO PENDIENTE:</div>
-                                            <div class="val-detEmp">SI</div>
-                                        </div>
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">ULTIMA VISITA:</div>
-                                            <div class="val-detEmp">18/07/2016</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="collapsible-header">
-                                    <i class="material-icons">done</i>
-                                    <span class="razonSocialVentaGeneral"><p class="codClienteVentaGeneral">1002394546</p> LA LUJURIA </span>
-                                    <div class="estadoEmpresa">
-                                        <span class="conVenta"></span>
-                                        <span class="conDespacho"></span>
-                                    </div>
-                                </div>
-                                <div class="collapsible-body bgGray">
-                                    <div style="padding:0 0.75rem;">
-                                        <a class="waves-effect botonOpciones accent-color" href="#FormNuevaVenta">VENDER</a>
-                                        <a class="waves-effect botonOpciones accent-color" href="#VistaDespachar">DESPACHAR</a>
-                                        <a class="waves-effect botonOpciones accent-color" href="#VistaCobrar">COBRAR</a>
-                                    </div>
-                                    <div class="contenedor-demp">
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">DIRECCION:</div>
-                                            <div class="val-detEmp">Pasaje Los Jazmines 123 - La Molina</div>
-                                        </div>
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">CONTACTO:</div>
-                                            <div class="val-detEmp">Sofia Desulovich <br> 947364856</div>
-                                        </div>
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">DESPACHO PENDIENTE:</div>
-                                            <div class="val-detEmp">SI</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="collapsible-header">
-                                    <span class="razonSocialVentaGeneral"><p class="codClienteVentaGeneral">1002394547</p>CANTO RODADO CONSUTORES</span>
-                                    <div class="estadoEmpresa">
-                                        <span class="conVenta"></span>
-                                        <span class="conDeuda"></span>
-                                    </div>
-                                </div>
-                              <div class="collapsible-body bgGray">
-                                <div style="padding:0 0.75rem;">
-                                    <a class="waves-effect botonOpciones accent-color" href="#FormNuevaVenta">VENDER</a>
-                                    <a class="waves-effect botonOpciones accent-color" href="#VistaDespachar">DESPACHAR</a>
-                                    <a class="waves-effect botonOpciones accent-color" href="#VistaCobrar">COBRAR</a>
-                                </div>
-                                <div class="contenedor-demp">
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">DIRECCION:</div>
-                                            <div class="val-detEmp">Av Trujillo 234 - La Libertad</div>
-                                        </div>
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">CONTACTO:</div>
-                                            <div class="val-detEmp">Mariela Ramirez <br> 998736524</div>
-                                        </div>
-                                        <div class="cont-detEmp">
-                                            <div class="para-detEmp">DEUDA:</div>
-                                            <div class="val-detEmp">S/401 (15/07/2016)</div>
-                                        </div>
-                                    </div>
-                              </div>
-                            </li>
-                          </ul>
+                           <ul id="cont-clientes-ruta" class="collapsible cont-emp-inicio" data-collapsible="accordion"><!--lista de clientes--></ul>
                     </div>
+                    <!--MODAL NO ACTUAR-->
+                    <div id="modalNoActuar" class="modal">
+                        <div class="modal-content">
+                            <span class="cab-pop-sel-dv">¿Qué sucedió?</span>
+                            <div class="cuerpo-pop-sel-dv" style="padding-top: 25px;">
+                                <div class="input-field col s12">
+                                    <select id="accion-no-actuar">
+                                        <option value="1">Venta</option>
+                                        <option value="2">Despacho</option>
+                                        <option value="3">Cobranza</option>
+                                    </select>
+                                    <label>¿Qué escenario?</label>
+                                </div>
+                                <div class="input-field col s12" id="select-comentarios-no-actuar">
+                                    <select id="sel-comentarios-no-actuar">
+                                        <option value="1">COMENTARIO 1</option>
+                                        <option value="2">COMENTARIO 2</option>
+                                    </select>
+                                    <label>Comentario</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat">CANCELAR</a>
+                            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-green btn-flat">ACEPTAR</a>
+                        </div>
+                    </div>
+                     <!--FIN MODAL NO ACTUAR-->
                 </div>
                 <div id="promociones" class="col s12">
                     <div class="col s12" style="font-size: 0;">
@@ -275,7 +201,7 @@
         </div>
     </div>
 
-    <div data-role="page" id="vendasDia">
+    <div data-role="page" id="ventasDia">
         <div data-role="header" class="dark-primary-color">
             <h1>VENTAS</h1>
         </div>
@@ -286,17 +212,61 @@
                     <div class="col s12" >
                         <div class="cont-vdes">
                             <div class="cabecera-vdes">Ventas del día</div>
-                            <div class="cuerpo-vdes cuerpo-vdes-vd">
-                                <ul>
-                                    <li> <span>VEN83293KD23D</span><span>S/200000</span> <i class="material-icons">done</i> </li>
-                                    <li> <span>VEN83293KD24D</span><span>S/300000</span> <i class="material-icons">warning</i> </li>
-                                    <li> <span>VEN83293KD25D</span><span>S/400000</span> <i class="material-icons">done</i> </li>
-                                    <li> <span>VEN83293KD26D</span><span>S/200000</span> <i class="material-icons">done</i> </li>
-                                    <li> <span>VEN83293KD27D</span><span>S/300000</span> <i class="material-icons">warning</i> </li>
-                                    <li> <span>VEN83293KD28D</span><span>S/400000</span> <i class="material-icons">done</i> </li>
+                            <div class="cuerpo-vdes cuerpo-vdes3 cuerpo-vdes-vd" style="padding: 0;">
+                                
+                                <ul class="collapsible itm-fac-pagar" data-collapsible="accordion">
+                                    <li>
+                                        <div class="collapsible-header">
+                                           <span>VEN83293KD23D</span><span class="precio-vd">S/200000</span> <i class="material-icons">done</i>
+                                        </div>
+                                        <div class="collapsible-body bgGray">
+                                            <div class="contenedor-demp contenedor-demp-vd">
+                                                <div><span>-</span>Producto 1</div>
+                                                <div><span>-</span>Producto 2</div>
+                                                <div><span>-</span>Producto 3</div>
+                                                <div><span>-</span>Producto 4</div>
+                                                <div><span>-</span>Producto 5</div>
+                                                <div><span>-</span>Producto 6</div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="collapsible-header">
+                                           <span>VEN83293KD24D</span><span class="precio-vd">S/300000</span> <i class="material-icons" style="color: #FF5252;">warning</i>
+                                        </div>
+                                        <div class="collapsible-body bgGray">
+                                            <div class="contenedor-demp contenedor-demp-vd">
+                                                <div><span>-</span>Producto 1</div>
+                                                <div><span>-</span>Producto 2</div>
+                                                <div><span>-</span>Producto 3</div>
+                                                <div><span>-</span>Producto 4</div>
+                                                <div><span>-</span>Producto 5</div>
+                                                <div><span>-</span>Producto 6</div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="collapsible-header">
+                                            <span>VEN83293KD25D</span><span class="precio-vd">S/400000</span> <i class="material-icons">done</i> 
+                                        </div>
+                                        <div class="collapsible-body bgGray">
+                                            <div class="contenedor-demp contenedor-demp-vd">
+                                                <div><span>-</span>Producto 1</div>
+                                                <div><span>-</span>Producto 2</div>
+                                                <div><span>-</span>Producto 3</div>
+                                                <div><span>-</span>Producto 4</div>
+                                                <div><span>-</span>Producto 5</div>
+                                                <div><span>-</span>Producto 6</div>
+                                            </div>
+                                        </div>
+                                    </li>
                                 </ul>
+
                             </div>
                         </div>
+                    </div>
+                    <div class="col s6"> 
+                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">SINCRONIZAR</a>
                     </div>
                     <div class="col s6"> 
                         <a data-rel="back" class="col s12 waves-effect waves-light btn-large">ATRAS</a>
@@ -308,7 +278,7 @@
 
     <div data-role="page" id="sistemaSincronizar">
         <div data-role="header" class="dark-primary-color">
-            <h1>VENTAS</h1>
+            <h1>SINCRONIZAR</h1>
         </div>
         <div data-role="content" style="margin-top: 6px;">
             <div class="row">
@@ -360,17 +330,22 @@
             <div class="row">
                 <div class="col s12"> 
                     <form>
-                        <div class="col s12" >
+                        <input type="hidden" value="0" id="id-cliente-nv" >
+                        <div class="col s12">
                             <label> Razón social </label>
-                            <input disabled class="margin-cero" type="text" id="usuario" name="usuario" value="Roinet SAC">
+                            <input disabled class="margin-cero" type="text" id="razon-social-nv" name="razon-social-nv" value="Roinet SAC">
                         </div>
-                        <div class="input-field col s12 cbodir-con" style="margin-top: 18px;">
-                            <select id="direccion-entrega-dpc">
+                        <div class="input-field col s12 cbodir-con" style="margin-top: 18px; display:none;" id="select-direcccion-nv">
+                            <select id="sel-direccion-nv">
                                 <option value="1">Dirección 1</option>
                                 <option value="2">Dirección 2</option>
                             </select>
                             <label>Dirección de entrega</label>
                         </div>
+                        <div id="input-direcccion-nv" class="col s12"  style="display:none;">
+                                <label>Dirección de entrega</label>
+                                <input disabled class="margin-cero" type="text" id="inp-direccion-nv" name="inp-direccion-nv" value="Roinet SAC">
+                            </div>
                         <div class="col s12" >
                             <div><label> Tipo de pago </label></div>
                             <p class="cont-rdb">
@@ -386,22 +361,22 @@
                         <div class="col s12" >
                             <div><label> Tipo de venta </label></div>
                             <p class="cont-rdb">
-                                <input class="with-gap rdb-tipo-pago" name="rdb-tipo-venta-nv" type="radio" id="rdb-boleta" value="boleta" checked />
+                                <input class="with-gap rdb-tipo-pago" name="rdb-tipo-venta-nv" type="radio" id="rdb-boleta" value="boleta" disabled="disabled" checked />
                                 <label for="rdb-boleta">BOLETA</label>
                             </p>
                             <p class="cont-rdb">
-                                <input class="with-gap rdb-tipo-pago" name="rdb-tipo-venta-nv" type="radio" id="rdb-factura" value="factura" />
+                                <input class="with-gap rdb-tipo-pago" name="rdb-tipo-venta-nv" type="radio" id="rdb-factura" value="factura" disabled="disabled" />
                                 <label for="rdb-factura">FACTURA</label>
                             </p>
                             <div class="raya-bajo"></div>
                         </div>
                         <div class="col s9" >
                             <label> Codigo de producto </label>
-                            <input  type="number" id="usuario" name="usuario" value="1021924">
+                            <input  type="number" id="codigo-producto-nv" name="codigo-producto-nv" placeholder="Escribir..." value="">
                         </div>
                         <div class="col s3">
                             <div id="btnBuscarProducto" class="botonChico accent-color waves-effect"><i class="material-icons">search</i></div>
-                            <div class="botonChico accent-color waves-effect"><i class="material-icons">add</i></div>
+                            <div id="btnAddProductoLista" class="botonChico accent-color waves-effect"><i class="material-icons">add</i></div>
                         </div>
                         <div class="col s12"> 
                             <table class="striped tablaDetalleVenta">
@@ -414,64 +389,107 @@
                                   </tr>
                                 </thead>
 
-                                <tbody>
-                                  <tr>
+                                <tbody id="cont-lst-prod-add">
+                                  <!--<tr>
                                     <td><span class="delete-producto">X</span></td>
                                     <td>Producto 1</td>
-                                    <!--<td>S/80.87</td>-->
-                                    <!--<td class="inputMediano"><input type="number" value="80.87" maxlength="4"></td>-->
-                                    <td class="precio-select-dv"><span>800</span><span style="color: #ff5252;font-size: 14px;">750</span></td>
-                                    <td class="inputChico"><input type="number" value="10" maxlength="4"></td>
-                                    <td>808.7</td>
+                                    <td class="precio-select-dv"><span>800</span></td>
+                                    <td class="inputChico"><input type="number" value="10" style="text-align: right;"></td>
+                                    <td style="text-align: right;">808.7</td>
                                   </tr>
                                   <tr>
                                     <td><span class="delete-producto">X</span></td>
                                     <td>Producto 2</td>
-                                    <!--<td>S/43.76</td>-->
-                                    <!--<td class="inputMediano"><input type="number" value="43.76" maxlength="4"></td>-->
-                                    <td class="precio-select-dv"><span >900</span><span style="color: #ff5252;font-size: 14px;">850</span></td>
-                                    <td class="inputChico"><input type="number" value="8" maxlength="4"></td>
-                                    <td>305.45</td>
-                                  </tr>
-                                  <tr>
-                                    <td><span class="delete-producto">X</span></td>
-                                    <td>Producto 3</td>
-                                    <!--<td>S/347.00</td>-->
-                                    <!--<td class="inputMediano"><input type="number" value="347.00" maxlength="4"></td>-->
-                                    <td class="precio-select-dv"><span>1000</span><span style="color: #ff5252;font-size: 14px;">950</span></td>
-                                    <td class="inputChico"><input type="number" value="100" maxlength="4"></td>
-                                    <td>3470.00</td>
-                                  </tr>
-                                  <!--TOTAL-->
-                                  <tr>
-                                    <td colspan="4" style="text-align:right; font-size:14px;"><b>Total</b></td>
-                                    <td>4020.45</td>
-                                  </tr>
+                                    <td class="precio-select-dv"><span >900</span><span class="nv-precio-style">850</span></td>
+                                    <td class="inputChico"><input type="number" value="8" style="text-align: right;"></td>
+                                    <td style="text-align: right;">305.45</td>
+                                  </tr>-->
                                 </tbody>
+                                <tr style="background-color: #607D8B;color: white;">
+                                    <td colspan="5" style="text-align:right; font-size:14px;letter-spacing: 0.1em;"><b>Total: </b><div id="precio-prod-imp-lst">0</div></td>
+                                </tr>
                               </table>
                         </div>
 
-                          <!-- Modal Structure -->
-                          <div id="modal1" class="modal">
+                        <!-- Modal Structure -->
+                        <div id="modalPrecio" class="modal">
                             <div class="modal-content">
                               <span class="cab-pop-sel-dv">Tipo de descuento</span>
-                              <div class="cuerpo-pop-sel-dv"> 
-
+                              <div class="cuerpo-pop-sel-dv">
+                                <p class="cont-rdb">
+                                    <input class="with-gap rdb-tipo-pago" name="rdb-tipo-descuento-nv" type="radio" id="rdb-porcentaje" value="porcentaje" checked />
+                                    <label for="rdb-porcentaje"> % </label>
+                                </p>
+                                <p class="cont-rdb">
+                                    <input class="with-gap rdb-tipo-pago" name="rdb-tipo-descuento-nv" type="radio" id="rdb-monto" value="monto" />
+                                    <label for="rdb-monto">MONTO</label>
+                                </p>
+                                <div class="raya-bajo"></div>
+                                <input class="margin-cero" type="number" id="num-descuento" name="num-descuento" placeholder="0">
+                                <div class="info-gene-prod">
+                                    <div><span>Precio: </span><span>800</span></div>
+                                    <div><span>Nuevo precio: </span><span>750</span></div>
+                                </div>
                               </div>
                             </div>
                             <div class="modal-footer">
-                              <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat">CANCELAR</a>
+                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-green btn-flat">ACEPTAR</a>
                             </div>
-                          </div>
+                        </div>
+
+                        <div id="modalAddProd" class="modal">
+                            <div class="modal-content">
+                              <span class="cab-pop-sel-dv" id="nombre-prod-add">Agregar item</span>
+                              <div class="cuerpo-pop-sel-dv">
+                                <input type="hidden" value="0" id="cod-prod-add">
+                                <input type="hidden" value="0" id="precio-prod-add">
+                                <div class="add-prod-mitad">
+                                    <label for="stock-prod">Stock</label>
+                                    <input disabled class="margin-cero" type="number" id="stock-prod" name="stock-prod" placeholder="0" style="color: #757575;">
+                                </div>
+                                <div class="add-prod-mitad">
+                                    <label for="unidad-prod">Und. Medida</label>
+                                    <input disabled class="margin-cero" type="text" id="unidad-prod" name="unidad-prod" style="color: #757575;">
+                                </div>
+                                <div class="add-prod-mitad">
+                                    <label for="cant-prod-add">Cantidad</label>
+                                    <input class="margin-cero" type="number" id="cant-prod-add" name="cant-prod-add" placeholder="0">
+                                </div>
+                                <div class="add-prod-mitad">
+                                    <label for="importe-prod">Importe</label>
+                                    <input disabled class="margin-cero" type="text" id="importe-prod" name="importe-prod" placeholder="0.00" style="color: #757575;">
+                                </div>
+                                <div class="info-gene-prod">
+                                    <div style="margin-bottom: 10px;font-weight: bold;"><span>Precio (S/):</span></div>
+                                    <div id="cont-info-precio"><!--contenido de precios--></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat" id="btn-cancelar-add-prod">CANCELAR</a>
+                                <a href="javascript:void(0)" id="btn-aceptar-add-prod" class="modal-action waves-effect waves-green btn-flat">ACEPTAR</a>
+                            </div>
+                        </div>
+
+                        <div id="mensaje-confirm" class="modal">
+                            <div class="modal-content">
+                                <h5>¿Desea eliminar <div style="display:inline-block; color: #ff5252;" id="eli-prod-cod"></div> de la lista?</h5>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat ">CANCELAR</a>
+                                <a href="javascript:void(0)" id="btn-quitar-lst-prod" class="modal-action modal-close waves-effect waves-green btn-flat ">ACEPTAR</a>
+                            </div>
+                        </div>
 
                         <div class="col s12" style="margin-bottom:10px;"> <div class="divider"></div></div>
                         <!--<div class="col s12"> -->
-                            <div class="col s6"> 
-                                <a id="aceptarFrmVenta" class="col s12 waves-effect waves-light btn-large">ACEPTAR</a>
-                            </div>
-                            <div class="col s6"> 
-                                <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
-                            </div>
+                        <div class="col s6"> 
+                            <a id="aceptarFrmVenta" class="col s12 waves-effect waves-light btn-large">ACEPTAR</a>
+                        </div>
+                        <div class="col s6"> 
+                            <a id="cancelarFrmVenta" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
+                        </div>
                         <!--</div>-->
                     </form>
                 </div>
@@ -538,12 +556,20 @@
                         <div class="cont-vdes">
                             <div class="cabecera-vdes">Opciones de busqueda</div>
                             <div class="cuerpo-vdes">
-                                <label> CODIGO PRODUCTO </label>
-                                <input type="text" id="cod-empNR" name="nom-prod" class="autocomplete" value="" placeholder="buscar...">
-                                <label> NOMBRE PRODUCTO </label>
-                                <input type="text" id="nom-empNR" name="nom-prod" class="autocomplete" value="" placeholder="buscar...">
+                                <label> (NOMBRE/CODIGO) PRODUCTO </label>
+                                <input type="text" id="buscarAllProducto" name="buscarAllProducto" placeholder="buscar...">
                             </div>
                         </div>
+                    </div>
+                    <div class="col s12" id="cont-lst-buscar-producto" >
+                        <!--<p>
+                            <input class="with-gap rdb-tipo-nc-doc" name="rdb-lst-prod" id="rdb-prod-pr001" type="radio" value="pr001" />
+                            <label for="rdb-prod-pr001">PRODUCTO 1</label>
+                        </p>
+                        <p>
+                            <input class="with-gap rdb-tipo-nc-doc" name="rdb-lst-prod" id="rdb-prod-pr002"  type="radio" value="pr002" />
+                            <label for="rdb-prod-pr002">PRODUCTO 2</label>
+                        </p>-->
                     </div>
                     <div class="col s6"> 
                         <div id="aceptarBuscarProducto" class="col s12 waves-effect waves-light btn-large">ELEGIR</div>
@@ -567,19 +593,18 @@
                     <div class="col s12" >
                         <div class="cont-vdes">
                             <div class="cabecera-vdes">Opciones de busqueda</div>
-                            <div class="cuerpo-vdes">
-                                <label> NOMBRE EMPRESA </label>
-                                <input type="text" id="nom-empNR" name="nom-prod" class="autocomplete" value="" placeholder="buscar...">
-                                <label> CODIGO EMPRESA </label>
-                                <input type="text" id="cod-empNR" name="nom-prod" class="autocomplete" value="" placeholder="buscar...">
-                                <label> RUC EMPRESA </label>
-                                <input type="text" id="ruc-empNR" name="nom-prod" class="autocomplete" value="" placeholder="buscar...">
+                            <div class="cuerpo-vdes" style="margin-top: 10px;">
+                                <label> (NOMBRE/CODIGO) EMPRESA </label>
+                                <input type="text" id="buscarAllCliente" name="buscarAllCliente" value="" placeholder="buscar...">
                             </div>
                         </div>
                     </div>
-                    <div class="col s6"> 
-                        <div id="btnVenderClienteNR" class="col s12 waves-effect waves-light btn-large">VENDER</div>
+                    <div class="col s12"> 
+                           <ul id="cont-clientes-todo" class="collapsible cont-emp-inicio" data-collapsible="accordion"><!--lista de clientes--></ul>
                     </div>
+                    <!--<div class="col s6"> 
+                        <div id="btnVenderClienteNR" class="col s12 waves-effect waves-light btn-large">VENDER</div>
+                    </div>-->
                     <div class="col s6"> 
                         <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
                     </div>
@@ -606,7 +631,7 @@
                             </div>
                         </div>
                         <div class="cont-vdes ">
-                            <div class="cabecera-vdes">Detalle de entrega - GLRM93840F</div>
+                            <div class="cabecera-vdes">Detalle de entrega</div>
                             <div class="cuerpo-vdes cuerpo-vdes2">
                                 <ul>
                                     <li>
@@ -631,27 +656,13 @@
                             </div>
                         </div>
                         <div class="cont-vdes" >
-                            <div class="cabecera-vdes">Detalle de entrega - GLRM93840F</div>
+                            <div class="cabecera-vdes">Detalle de entrega</div>
                             <div class="cuerpo-vdes" style="margin-top: 15px;">
                                 <div class="input-field col s12">
-                                    <select id="tipo-entrega-dpc">
-                                      <option value="1">Entrega sin problemas</option>
-                                      <option value="2">Entrega SV</option>
-                                      <option value="3">Rechazo por completo</option>
-                                      <option value="4">Pendiente</option>
-                                      <option value="5">Entregado NC</option>
+                                    <select id="tipo-entrega-dpc" class="dpdLinea">
+                                      <!--<option value="1">Entrega sin problemas</option>-->
                                     </select>
                                     <label>Tipo de entrega</label>
-                                </div>
-                                <div class="input-field col s12">
-                                    <select id="cbo-comentario-dpc">
-                                        <option value="0">Sin comentarios</option>
-                                        <option value="1">Comentario 1</option>
-                                        <option value="2">Comentario 2</option>
-                                        <option value="3">Comentario 3</option>
-                                        <option value="4">Comentario 4</option>
-                                    </select>
-                                    <label>Comentarios</label>
                                 </div>
                                 <div>
                                     <div><label class="label-titulo"> Monto a cobrar </label></div>
@@ -672,6 +683,13 @@
                                             <input type="number" id="tp-cantidad" name="tp-cantidad" placeholder="00.00">
                                         </div>
                                     </div>
+                                    <div class="raya-bajo"></div>
+                                </div>
+                                <div class="input-field col s12" style="margin-top: 25px;">
+                                    <select id="cbo-comentario-dpc" class="dpdLinea">
+                                        <!--<option value="0">Sin comentarios</option>-->
+                                    </select>
+                                    <label>Comentarios</label>
                                 </div>
                             </div>
                         </div>
@@ -827,12 +845,16 @@
                             <div class="cuerpo-vdes" id="tipo-pago-cobrar">
                                 <div><label class="label-titulo"> Monto a cobrar </label></div>
                                 <p class="cont-rdb">
-                                    <input class="with-gap rdb-tipo-pago" name="rdb-tipo-pago" type="radio" id="rdb-total-tp" value="total" checked />
-                                    <label for="rdb-total-tp">Total</label>
+                                    <input class="with-gap rdb-tipo-pago" name="rdb-tipo-pago" type="radio" id="rdb-nopago-tp" value="nada" checked />
+                                    <label class="label-radio-red" for="rdb-nopago-tp">No pagó</label>
+                                </p>
+                                <p class="cont-rdb">
+                                    <input class="with-gap rdb-tipo-pago" name="rdb-tipo-pago" type="radio" id="rdb-total-tp" value="total" />
+                                    <label class="label-radio-red" for="rdb-total-tp">Total</label>
                                 </p>
                                 <p class="cont-rdb">
                                     <input class="with-gap rdb-tipo-pago" name="rdb-tipo-pago" type="radio" value="adelanto" id="rdb-adelanto-tp" />
-                                    <label for="rdb-adelanto-tp">Adelanto</label>
+                                    <label class="label-radio-red" for="rdb-adelanto-tp">Adelanto</label>
                                 </p>
                                 <div id="adelanto-cont" style="display:none;">
                                     <div class="col s12">
@@ -841,12 +863,8 @@
                                 </div>
 
                                 <div class="input-field col s12" style="margin-top: 20px;">
-                                    <select id="cbo-comentario-cbz">
-                                        <option value="0">Sin comentarios</option>
-                                        <option value="1">Comentario 1</option>
-                                        <option value="2">Comentario 2</option>
-                                        <option value="3">Comentario 3</option>
-                                        <option value="4">Comentario 4</option>
+                                    <select id="cbo-comentario-cbz" class="dpdLinea">
+                                        <!--<option value="0">Sin comentarios</option>-->
                                     </select>
                                     <label>Comentarios</label>
                                 </div>

@@ -66,6 +66,9 @@
         },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "pe.roinet.tomapedido"
+        },
+        "cordova-sqlite-storage": {
+            "PACKAGE_NAME": "pe.roinet.tomapedido"
         }
     },
     "dependent_plugins": {}
