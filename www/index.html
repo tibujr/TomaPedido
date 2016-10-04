@@ -29,7 +29,7 @@
 <body class="">
 
     <div data-role="page" id="login">
-        <div data-role="header">
+        <div data-role="header"  data-position="fixed">
             <h1>LOGIN</h1>
         </div>
         <div data-role="content" id="cont" >  
@@ -118,14 +118,14 @@
                                     <span class="conDeuda"></span>
                                     <span>Deuda pendiente</span>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-                    <div class="col s12"> 
+                    <div class="col s12 cont-info-nom"> <p>CLIENTES DEL DIA:</p> </div>
+                    <div class="col s12" style="margin-top: 0;"> 
                            <ul id="cont-clientes-ruta" class="collapsible cont-emp-inicio" data-collapsible="accordion"><!--lista de clientes--></ul>
                     </div>
-                    <!--MODAL NO ACTUAR-->
+                    <!-- MODAL NO ACTUAR -->
                     <div id="modalNoActuar" class="modal">
                         <div class="modal-content">
                             <span class="cab-pop-sel-dv">¿Qué sucedió?</span>
@@ -152,7 +152,7 @@
                             <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-green btn-flat">ACEPTAR</a>
                         </div>
                     </div>
-                     <!--FIN MODAL NO ACTUAR-->
+                     <!-- FIN MODAL NO ACTUAR -->
                 </div>
                 <div id="promociones" class="col s12">
                     <div class="col s12" style="font-size: 0;">
@@ -625,8 +625,8 @@
                             <div class="cuerpo-vdes">
                                 <div class="ico-dato-emp-cab"><i class="material-icons empresa-ico" >business</i></div>
                                 <div class="cont-dato-emp-cab">
-                                    <span class="dato-emp-cab">Canto Rodado Consultores SAC</span>
-                                    <span class="dato-emp-cab" style="font-size: 12px;">Gisella Noles</span>
+                                    <span class="dato-emp-cab" id="nom-emp-des">Canto Rodado Consultores SAC</span>
+                                    <span class="dato-emp-cab" style="font-size: 12px;" id="nom-con-des">Gisella Noles</span>
                                 </div>
                             </div>
                         </div>

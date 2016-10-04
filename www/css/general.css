@@ -28,6 +28,17 @@ li, a{
 
 /*INICIO*/
 
+.cont-info-nom{
+    margin-bottom: 0 !important;
+}
+
+.cont-info-nom p{
+    margin: 14px 0 0 0;
+    font-size: 11px;
+    color: #ff5252;
+    text-decoration: underline;
+}
+
 p.codClienteVentaGeneral {
     margin: 0px;
     font-size: 12px;

@@ -12,7 +12,8 @@
 
 $(document).ready(function (){
 
-	var webService = "http://168.121.51.114:81/AMWEB/Service1.asmx/"; //WS ALTOMAYO
+	//var webService = "http://168.121.51.114:81/AMWEB/Service1.asmx/"; //WS ALTOMAYO
+	var webService = "http://tomapedidos.avanza.pe/wsroinet/"; //WS ROINET
 
 	var arregloRuta = new Array(); //arreglo para busqueda de empresas de ruta
 	var arregloTodoclientes = new Array(); //arreglo para busqueda clientes asignados al vendedor
@@ -31,7 +32,7 @@ $(document).ready(function (){
 
 	function inicializar()
 	{	
-		crearBaseDatos();
+		
 		metodosMaterialize();
 		if( localStorage.getItem('usu_tp') != null ){
 			localStorage.setItem('primer_login', false); //indicando que YA tiene sesion
@@ -46,39 +47,7 @@ $(document).ready(function (){
 		}
 	}
 
-	function crearBaseDatos(){
-		try{
-			var db = null;
-			document.addEventListener('deviceready', complementoBD, errorBD);
-		}
-		catch(er){
-			alert(er)
-		}
-	}
-
-	function complementoBD(){
-		/*var db = window.sqlitePlugin.openDatabase({name: 'test.db', location: 'default'});
-	 	db.transaction(function(tr) {
-		   	tr.executeSql("SELECT upper('Hola que tal') AS upperString", [], function(tr, rs) {
-		     	alert("Resultado upperString : " + rs.rows.item(0).upperString);
-		   	});
-
-		})
-		db.transaction(function(tx) {
-		    tx.executeSql('CREATE TABLE IF NOT EXISTS login (name, score)');
-		    tx.executeSql('INSERT INTO login VALUES (?,?)', ['Alice', 101]);
-		    tx.executeSql('INSERT INTO login VALUES (?,?)', ['Betty', 202]);
-	  	}, function(error) {
-		    alert('Transaction ERROR: ' + error.message);
-	  	}, function() {
-		    alert('Populated database OK');
-	  	});*/
-	}
-
-	function errorBD(er)
-	{
-		alert(er)
-	}
+	
 
 	function metodosMaterialize()
 	{
@@ -115,14 +84,14 @@ $(document).ready(function (){
 		return false;
 	})
 
-	function convertirJSON(data)
+	/*function convertirJSON(data)
 	{
 		
 		//var dt = data;// descomentar cuando comience a usarse el webservice
 		var dt = new XMLSerializer().serializeToString(data);
 		var dt = dt.substring(dt.indexOf("["),(dt.indexOf("]")+1));
 		return dt;
-	}
+	}*/
 
 	function convertirJSONTemp(data)
 	{
@@ -141,12 +110,8 @@ $(document).ready(function (){
 				type: 'POST',
 				dataType: 'json',
 				data: {user: data.usuario, password:data.clave},
-				//data: {user: data.usuario, password:"lol"},
 				beforeSend:function (){},
 				success: function(dataR){
-
-					//dataR = '[{"respuesta":true, "codigoVendedor": "10001", "alias": "Luis Rojas"}]'; // simulando dato, comentar cuando empieza a usar web service
-					//dataR = JSON.parse( convertirJSON(dataR) ); 
 
 					if(dataR != undefined)
 					{
@@ -180,10 +145,54 @@ $(document).ready(function (){
 		}
 	}
 
+
+	/* 	----------	BASE DE DATOS 	----------	 */
+	function crearBaseDatos(){
+		/*try{
+			var db = null;
+			document.addEventListener('deviceready', complementoBD, errorBD);
+		}
+		catch(er){
+			alert(er)
+		}*/
+	}
+
+	function complementoBD(){
+		/*var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+	 	db.transaction(function(tr) {
+		   	tr.executeSql("SELECT upper('Hola que tal') AS upperString", [], function(tr, rs) {
+		     	alert("Resultado upperString : " + rs.rows.item(0).upperString);
+		   	});
+
+		}, errorTransac)
+		/*db.transaction(function(tx) {
+		    tx.executeSql('CREATE TABLE IF NOT EXISTS login (name, score)');
+		    tx.executeSql('INSERT INTO login VALUES (?,?)', ['Alice', 101]);
+		    tx.executeSql('INSERT INTO login VALUES (?,?)', ['Betty', 202]);
+	  	}, function(error) {
+		    alert('Transaction ERROR: ' + error.message);
+	  	}, function() {
+		    alert('Populated database OK');
+	  	});*/
+	}
+
+	function errorTransac(er){
+		alert(er)
+	}
+
+	function errorBD(er)
+	{
+		alert(er)
+	}
+
+	/* 	----------	FIN BASE DE DATOS 	----------	 */
+
 	function cargarDatosLoginOK()
 	{
 		if( localStorage.getItem('primer_login') != true ) //CAMBIAR POR == ************************************************************************************
 		{
+			crearBaseDatos(); // CREA LA BASE DE DATOS SQLITE
+
 			localStorage.setItem('fecha_cartera', app.getFecha());
 
 			cargarTodosClienteServer();
@@ -210,15 +219,11 @@ $(document).ready(function (){
 		arregloTodoDatosclientes = []; //CLIENTE CON TODOS LOS DATOS
 		try{
 			$.ajax({
-				url: webService+"Login",
+				url: webService+"ListaClienteVendedor",
 				type: 'POST',
-				data: {user: localStorage.getItem('mail_tp'), password:localStorage.getItem('clave_tp')},
+				dataType: 'json',
+				data: {codigoVendedor: localStorage.getItem('usu_tp')},
 				success: function(dataR){
-					dataR = '[{"codCliente":"CL0001", "razonSocial":"Roinet SAC", "ruc":"27364563721", "clasificacion":"Pto. Mercado", "giro":"Informatica", "direccion_p":"Shell 343 - Miraflores", "contacto":"Rene Ramirez", "celContacto":"999873647", "deuda":203.04, "fechaDeuda":"2016-08-30", "despacho": true, "fechaUltimaVisita":"2016-08-15", "contactoUltimaVisita":"Gisella Noles", "atendido":"no", "ruta":false},'+
-							'{"codCliente":"CL0002", "razonSocial":"Canto Rodado SAC", "ruc":"27345345515", "clasificacion":"Edificio", "giro":"robotica", "direccion_p":"Aramburu 342 - Miraflores", "contacto":"Alfredo Arroyo", "celContacto":"939384756", "deuda":0.00, "fechaDeuda":null, "despacho": false, "fechaUltimaVisita":"2016-07-15", "contactoUltimaVisita":"Luis Deza", "atendido":"no", "ruta":true},'+
-							'{"codCliente":"CL0003", "razonSocial":"Asombra Perú SAC", "ruc":"224354567656", "clasificacion":"Dpt. Bodega", "giro":"metales", "direccion_p":"ARoque Boloña - Surco", "contacto":"Tamara Rodriguez", "celContacto":"919293949", "deuda":855.55, "fechaDeuda":"2016-07-40", "despacho": false, "fechaUltimaVisita":"2016-08-20", "contactoUltimaVisita":"Alessandra Mora", "atendido":"no", "ruta":true},'+
-							'{"codCliente":"CL0004", "razonSocial":"La Lujuria SAC", "ruc":"58374635263", "clasificacion":"Bdga Casa", "giro":"Tamalitos", "direccion_p":"los Jazmines 123 - La Molina", "contacto":"Sofia Roque", "celContacto":"939928374", "deuda":0.00, "fechaDeuda":null, "despacho": false, "fechaUltimaVisita":"2016-08-17", "contactoUltimaVisita":"Javier Gadea", "atendido":"no", "ruta":false}]';
-					dataR = JSON.parse( convertirJSONTemp(dataR) ); 
 					arregloTodoDatosclientes = dataR; //para obtener el detalle del cliente cuando busca
 					llenarArregloClientes(dataR, ["codCliente","razonSocial"]) //arreglo para buscar clientes
 					llenarClientesBDPhone(dataR); // 1) LLENA LOS CLIENTES A LA BD PHONE
@@ -251,32 +256,12 @@ $(document).ready(function (){
 	{
 		try{
 			$.ajax({
-				url: webService+"Login",
+				url: webService+"cargarTodosCombosServer",
 				type: 'POST',
-				data: {user: localStorage.getItem('mail_tp'), password:localStorage.getItem('clave_tp')},
+				dataType: 'json',
+				data: {},
 				success: function(dataR){
-					dataR = '[{"codigo":"TE0001", "codClase":"CS0001","descripcion":"Entrega sin problemas", "dpd":null},'+
-							'{"codigo":"TE0002", "codClase":"CS0001","descripcion":"Entrega SV", "dpd":null},'+
-							'{"codigo":"TE0003", "codClase":"CS0001","descripcion":"Rechazo por completo", "dpd":null},'+
-							'{"codigo":"CD0001", "codClase":"CS0002","descripcion":"Comentario DS 1", "dpd":"DP0001"},'+
-							'{"codigo":"CD0002", "codClase":"CS0002","descripcion":"Comentario DS 2", "dpd":"DP0001"},'+
-							'{"codigo":"CD0003", "codClase":"CS0002","descripcion":"Comentario DS 3", "dpd":"DP0002"},'+
-							'{"codigo":"CD0004", "codClase":"CS0002","descripcion":"Comentario DS 4", "dpd":"DP0002"},'+
-							'{"codigo":"CD0005", "codClase":"CS0002","descripcion":"Comentario DS 5", "dpd":"DP0003"},'+
-							'{"codigo":"CD0006", "codClase":"CS0002","descripcion":"Comentario DS 6", "dpd":"DP0003"},'+
-							'{"codigo":"CC0001", "codClase":"CS0003","descripcion":"Comentario CC 1", "dpd":"CB0001"},'+
-							'{"codigo":"CC0002", "codClase":"CS0003","descripcion":"Comentario CC 2", "dpd":"CB0001"},'+
-							'{"codigo":"CC0003", "codClase":"CS0003","descripcion":"Comentario CC 3", "dpd":"CB0002"},'+
-							'{"codigo":"CC0004", "codClase":"CS0003","descripcion":"Comentario CC 4", "dpd":"CB0002"},'+
-							'{"codigo":"CC0005", "codClase":"CS0003","descripcion":"Comentario CC 5", "dpd":"CB0003"},'+
-							'{"codigo":"CC0006", "codClase":"CS0003","descripcion":"Comentario CC 6", "dpd":"CB0003"}]';
-							//CS0001 --> COMBO TIPO DE ENTREGA -> DESPACHO
-							//CS0002 --> COMBO COMENTARIOS -> DESPACHO
-							//CS0003 --> COMBO COMENTARIOS -> COBRAR
-					dataR = JSON.parse( convertirJSONTemp(dataR) ); 
-
 					llenarCombosBDPhone(dataR); // 2) LLENA LOS COMENTARIOS A LA BD
-					
 				},
 				error: function(dataR){
 					Materialize.toast('Error CMB001. Ruta de combos no válida.', 5000);
@@ -295,16 +280,11 @@ $(document).ready(function (){
 	{
 		try{
 			$.ajax({
-				url: webService+"Login",
+				url: webService+"ListarDireccionesMultiples",
 				type: 'POST',
-				data: {user: localStorage.getItem('mail_tp'), password:localStorage.getItem('clave_tp')},
+				dataType: 'json',
+				data: {},
 				success: function(dataR){
-					dataR = '[{"codigoDir":"DI0001", "codigoCliente":"CL0002", "direccion":"Aramburu 342 - Miraflores"},'+
-							'{"codigoDir":"DI0002", "codigoCliente":"CL0002", "direccion":"Los portales 123- SJM"},'+
-							'{"codigoDir":"DI0003", "codigoCliente":"CL0002", "direccion":"Angamos 342 - El Agustino"},'+
-							'{"codigoDir":"DI0004", "codigoCliente":"CL0004", "direccion":"los Jazmines 123 - La Molina"},'+
-							'{"codigoDir":"DI0005", "codigoCliente":"CL0004", "direccion":"Calle Romario 2342 - Miraflores"}]';
-					dataR = JSON.parse( convertirJSONTemp(dataR) );
 					llenarDireccionesBDPhone(dataR); // 1) LLENA LOS CLIENTES A LA BD PHONE
 				},
 				error: function(dataR){
@@ -324,16 +304,11 @@ $(document).ready(function (){
 	{
 		try{
 			$.ajax({
-				url: webService+"Login",
+				url: webService+"ListarTodosProducto",
 				type: 'POST',
-				data: {user: localStorage.getItem('mail_tp'), password:localStorage.getItem('clave_tp')},
+				dataType: 'json',
+				data: {},
 				success: function(dataR){
-					dataR = '[{"codigoProd":"00001", "nombreProducto":"PRODUCTO 1", "precio":110.20, "precioCredito":120.20, "stock":34234, "undMedida":"Und", "corte":true},'+
-							'{"codigoProd":"00002", "nombreProducto":"PRODUCTO 2", "precio":111.30, "precioCredito":121.30, "stock":34535, "undMedida":"paquete", "corte":true},'+
-							'{"codigoProd":"00003", "nombreProducto":"PRODUCTO 3", "precio":112.40, "precioCredito":122.40, "stock":456346, "undMedida":"Und", "corte":false},'+
-							'{"codigoProd":"00004", "nombreProducto":"PRODUCTO 4", "precio":113.50, "precioCredito":123.50, "stock":456743, "undMedida":"paquete", "corte":false},'+
-							'{"codigoProd":"00005", "nombreProducto":"PRODUCTO 5", "precio":114.60, "precioCredito":124.60, "stock":768454, "undMedida":"Und", "corte":false}]';
-					dataR = JSON.parse( convertirJSONTemp(dataR) );
 					llenarArregloProductos(dataR, ["codigoProd","nombreProducto"]) //arreglo para buscar clientes
 					llenarProductosBDPhone(dataR);
 				},
@@ -364,16 +339,11 @@ $(document).ready(function (){
 	{
 		try{
 			$.ajax({
-				url: webService+"Login",
+				url: webService+"ListarCortesProductos",
 				type: 'POST',
-				data: {user: localStorage.getItem('mail_tp'), password:localStorage.getItem('clave_tp')},
+				dataType: 'json',
+				data: {},
 				success: function(dataR){
-					dataR = '[{"codigoCorte":"CR0001", "codigoProd":"00001", "precio":110.20, "corte":1},'+
-							'{"codigoCorte":"CR0002", "codigoProd":"00001", "precio":105.30, "corte":20},'+
-							'{"codigoCorte":"CR0003", "codigoProd":"00002", "precio":112.40, "corte":1},'+
-							'{"codigoCorte":"CR0004", "codigoProd":"00002", "precio":107.20, "corte":15},'+
-							'{"codigoCorte":"CR0005", "codigoProd":"00002",  "precio":101.10, "corte":80}]';
-					dataR = JSON.parse( convertirJSONTemp(dataR) );
 					llenarCorteProductosBDPhone(dataR);
 				},
 				error: function(dataR){
@@ -468,15 +438,11 @@ $(document).ready(function (){
 
 		try{
 			$.ajax({
-				url: webService+"Login",
+				url: webService+"ListarClienteVendedoRuta",
 				type: 'POST',
-				data: {user: localStorage.getItem('mail_tp'), password:localStorage.getItem('clave_tp')},
+				data: {codigoVendedor: localStorage.getItem('usu_tp')},
 				success: function(dataR){
 					// EL PARAMETRO TIPO VA DECIDIR SI SE AGREGA LA EMPRESA O SOLO ACTUALIZA
-					var data = '[{tipo: "existente", codCliente":"CL0002", "deuda":0.00, "fechaDeuda":null, "despacho": false, "fechaUltimaVisita":"2016-07-15", "contactoUltimaVisita":"Luis Deza", "atendido":"no"},'+
-								'{tipo: "nuevo", "codCliente":"CL0003", "razonSocial":"Asombra Perú SAC", "ruc":"224354567656", "clasificacion":"Dpt. Bodega", "giro":"metales", "direccion_p":"ARoque Boloña - Surco", "contacto":"Tamara Rodriguez", "celContacto":"989746586", "deuda":855.55, "fechaDeuda":"2016-07-40", "despacho": false, "fechaUltimaVisita":"2016-08-20", "contactoUltimaVisita":"Alessandra Mora", "atendido":"no", "ruta":true, "tipo":"empresa"}'+
-								'{tipo: "editar", "codCliente":"CL0003", "razonSocial":"Asombra Perú SAC", "ruc":"224354567656", "clasificacion":"Dpt. Bodega", "giro":"metales", "direccion_p":"ARoque Boloña - Surco", "contacto":"Tamara Rodriguez", "celContacto":"989746586", "deuda":855.55, "fechaDeuda":"2016-07-40", "despacho": false, "fechaUltimaVisita":"2016-08-20", "contactoUltimaVisita":"Alessandra Mora", "atendido":"no", "ruta":true, "tipo":"empresa"}]';
-					data = JSON.parse( convertirJSONTemp(data) );
 					actualizaClientesRutaPhone(data);	
 				},
 				error: function(dataR){
@@ -805,8 +771,7 @@ $(document).ready(function (){
 		cargarClientesRutaPhone() //vuelve a cargar la lista principal de clientes en ruta con sus estados
 
 		Materialize.toast('Venta exitosa.', 3000);
-		$.mobile.back();
-		//$.mobile.changePage("#home");
+		$.mobile.back(); //guarde o no guarde en el servidor debe regresar a la pantalla anterior***********
 	}
 
 	$("body").on('click', '#cancelarFrmVenta', function(e){
