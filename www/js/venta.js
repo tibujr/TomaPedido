@@ -112,10 +112,10 @@ $(document).ready(function (){
 	{
 		try{
 			$.ajax({
-				url: webService+"Login",
+				url: 'http://168.121.238.14:81/AMWEB/Service1.asmx/Login?user=700&password=1111',//webService+"Login",
 				type: 'GET',
 				dataType: 'json',
-				data: {user: data.usuario, password:data.clave},
+				data: {},//{user: data.usuario, password:data.clave},
 				beforeSend:function (){ 
 					abrirAlerta("Verificando usuario...");
 				},
