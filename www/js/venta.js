@@ -15,8 +15,8 @@ $(document).ready(function (){
 	var webService = "http://168.121.238.14:81/AMWEB/Service1.asmx/";
 
 	var arregloRuta = new Array(); //arreglo para busqueda de empresas de ruta
-	var arregloTodoclientes = new Array(); //arreglo para busqueda clientes asignados al vendedor
-	var arregloTodoDatosclientes = new Array(); //ARREGLO QUE ALMACENA TODOS LOS CLIENTE
+	//var arregloTodoclientes = new Array(); //arreglo para busqueda clientes asignados al vendedor
+	//var arregloTodoDatosclientes = new Array(); //ARREGLO QUE ALMACENA TODOS LOS CLIENTE
 
 	var arregloTodoProductos = new Array(); //arreglo para busqueda productos en phone
 	var arregloPrecioProductoAdd = new Array(); //arreglo para almacenar precios de
@@ -25,24 +25,34 @@ $(document).ready(function (){
 
 	var idClienteVenta = null;
 	
+
+	/*FUNCIONES DE BOTONES CELULAR*/
+
+	document.addEventListener("backbutton", onBackKeyDown, false);
+
+	function onBackKeyDown() {
+	    //Handle the back button
+	}
+
+	/* FIN FUNCIONES DE BOTONES CELULAR*/
+
 	/* METODOS QUE SE EJECUTARAN AL INICIAR EL APLICATIVO */
 
 	inicializar();
 
 	function inicializar()
-	{	
-		
+	{
 		metodosMaterialize();
-		if( localStorage.getItem('usu_tp') != null ){
+		if( localStorage.getItem('usu_tp') == null || localStorage.getItem('usu_tp') == "null" ){
+			localStorage.setItem('primer_login', true); //indicando que NO tiene sesion
+		}
+		else{
 			localStorage.setItem('primer_login', false); //indicando que YA tiene sesion
 			var data = 	{
 							usuario: localStorage.getItem('mail_tp'),
 			 				clave: localStorage.getItem('clave_tp')
 			 			}
 		    login(data);
-		}
-		else{
-			localStorage.setItem('primer_login', true); //indicando que NO tiene sesion
 		}
 	}
 
@@ -75,30 +85,27 @@ $(document).ready(function (){
 						clave: $("#clave").val()
 					};
 		if(data.usuario != "" && data.clave != ""){
-			login(data);
+			login( data );
 		}else{
 			Materialize.toast("Usuario y clave necesarios.", 3000);
 		}
 
 		return false;
-	})
+	});
 
-	/*function convertirJSON(data)
+	function abrirAlerta(msj)
 	{
-		
-		//var dt = data;// descomentar cuando comience a usarse el webservice
-		var dt = new XMLSerializer().serializeToString(data);
-		var dt = dt.substring(dt.indexOf("["),(dt.indexOf("]")+1));
-		return dt;
-	}*/
+		$("#modalMensaje").openModal({
+			 dismissible: false,
+			 ending_top: '25%'
+		});
 
-	function convertirJSONTemp(data)
+		$("#mensaje-alerta").html(msj);
+	}
+
+	function cerrarAlerta()
 	{
-		
-		var dt = data;// descomentar cuando comience a usarse el webservice
-		//var dt = new XMLSerializer().serializeToString(data);
-		var dt = dt.substring(dt.indexOf("["),(dt.indexOf("]")+1));
-		return dt;
+		$("#modalMensaje").closeModal();
 	}
 
 	function login(data)
@@ -109,19 +116,23 @@ $(document).ready(function (){
 				type: 'POST',
 				dataType: 'json',
 				data: {user: data.usuario, password:data.clave},
-				beforeSend:function (){},
+				beforeSend:function (){ 
+					abrirAlerta("Verificando usuario...");
+				},
 				success: function(dataR){
-
 					if(dataR != undefined)
 					{
 						if( dataR.respuesta == "true" || dataR.respuesta == true){
 							$("#nombre-usuario-tp").html( dataR.alias.trim().substring(0,16)+".."); //asignando nombre
 							localStorage.setItem('usu_tp', dataR.codigoVendedor.trim());
+							localStorage.setItem('nombre_tp', dataR.alias.trim());
 							localStorage.setItem('mail_tp', data.usuario.trim());
 							localStorage.setItem('clave_tp', data.clave.trim());
+							localStorage.setItem('perfil_tp', dataR.perfil.toLowerCase().trim() );
 							cargarDatosLoginOK(dataR.codigoVendedor);//metodo que se ejecuta despues del login OK
 							$.mobile.changePage("#home");
 						}else{
+							cerrarAlerta();
 							Materialize.toast('Usuario o contraseña incorrecta.', 3000);
 							return false;
 						}
@@ -131,48 +142,63 @@ $(document).ready(function (){
 					}
 				},
 				error: function(dataR){
-					console.log( JSON.stringify(dataR) )
-					Materialize.toast('Error L00002. Ruta de Login no válida.', 5000);
-					return false;
+					cerrarAlerta();
+					if( localStorage.getItem('primer_login') == true || localStorage.getItem('primer_login') == "true"){
+						alert( JSON.stringify( dataR ));
+						//Materialize.toast('Error L00002. Problemas de conexion con el servidor login().', 5000);
+						return false;
+					}else{
+						cargarArregloProducto();
+						cargarClientesRutaPhone();
+						Materialize.toast('Verificar conexion a internet, se cargó la ultima ruta activa.', 5000);
+						$.mobile.changePage("#home"); //si falla conexion carga la ultima lista de ruta 
+					}
+					
 			    }
 			});
 
 		}catch(er){
-			console.log(er)
+			//alert(er);
 			Materialize.toast('Error L00003. Error general, reiniciar APP.', 5000);
 			return false;
 		}
 	}
 
-
 	/* 	----------	BASE DE DATOS 	----------	 */
 	function crearBaseDatos(){
-		/*try{
-			var db = null;
+		try{
+			//var db = null;
 			document.addEventListener('deviceready', complementoBD, errorBD);
 		}
 		catch(er){
-			alert(er)
-		}*/
+			alert("ebd: "+er)
+		}
 	}
 
 	function complementoBD(){
-		/*var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
-	 	db.transaction(function(tr) {
-		   	tr.executeSql("SELECT upper('Hola que tal') AS upperString", [], function(tr, rs) {
-		     	alert("Resultado upperString : " + rs.rows.item(0).upperString);
-		   	});
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+		    tx.executeSql('CREATE TABLE IF NOT EXISTS cliente (codCliente, razonSocial, ruc, clasificacion, giro, direccion_p, contacto, celContacto, deuda REAL, fechaDeuda, despacho, fechaUltimaVisita, contactoUltimaVisita, atendido, ruta, tipo)');
+		    tx.executeSql('CREATE TABLE IF NOT EXISTS direccionCliente (codigoDir, codigoCliente, direccion)');
+		    tx.executeSql('CREATE TABLE IF NOT EXISTS combo (codigo, codClase, descripcion, dpd)');
+		    tx.executeSql('CREATE TABLE IF NOT EXISTS producto (codigoProd, nombreProducto, precio, precioCredito REAL, stock integer, undMedida, corte)');
+			tx.executeSql('CREATE TABLE IF NOT EXISTS productoCorte (codigoCorte, codigoProd, precio REAL, corte integer)');
 
-		}, errorTransac)
-		/*db.transaction(function(tx) {
-		    tx.executeSql('CREATE TABLE IF NOT EXISTS login (name, score)');
-		    tx.executeSql('INSERT INTO login VALUES (?,?)', ['Alice', 101]);
-		    tx.executeSql('INSERT INTO login VALUES (?,?)', ['Betty', 202]);
+			//nueva venta
+			tx.executeSql('CREATE TABLE IF NOT EXISTS cabeceraVenta (codCabecera integer primary key autoincrement, codigoServer, codCliente, dirEntrega, tipoPago, tipoVenta, totalPagar REAL, igv, horaInicio, fechaHora, longitude, latitude, batery, accuracy)');
+			tx.executeSql('CREATE TABLE IF NOT EXISTS detalleVenta (codDetalleVenta integer primary key autoincrement, codCabecera integer, codigoProd, precio, cantidad integer, importe REAL)');
+
+			//despacho
+			tx.executeSql('CREATE TABLE IF NOT EXISTS factura (codFactura integer primary key autoincrement, codFacturaServer, codCliente, codVentaServer, importeFactura, estado, fechaHora)'); // estado = ("si": puede dejar el pedido sin cobrar la factura,"no": debe cobrar obligatoriamente la factura);
+	  		
+	  		//cobranza
+
 	  	}, function(error) {
-		    alert('Transaction ERROR: ' + error.message);
+	  		alert("Error al crear tablas.")
+		    //alert('Transaction ERROR: ' + error.message);
 	  	}, function() {
-		    alert('Populated database OK');
-	  	});*/
+		    //alert('Populated database OK');
+	  	});
 	}
 
 	function errorTransac(er){
@@ -188,23 +214,42 @@ $(document).ready(function (){
 
 	function cargarDatosLoginOK()
 	{
-		if( localStorage.getItem('primer_login') != true ) //CAMBIAR POR == ************************************************************************************
+		if( localStorage.getItem('primer_login') == true || localStorage.getItem('primer_login') == "true") //CAMBIAR != POR == ************************************************************************************
 		{
 			crearBaseDatos(); // CREA LA BASE DE DATOS SQLITE
+			limpiarTablasTemporales();// LIMPIA TABLAS DESPUES DE CERRAR SESION
 
 			localStorage.setItem('fecha_cartera', app.getFecha());
 
 			cargarTodosClienteServer();
-			cargarDireccionesMultipleServer();
-			cargarTodosCombosServer();
-			cargarTodosProductoServer();
-			cargarCortesProductoServer();
+
+			if(localStorage.getItem('perfil_tp') == "venta")
+			{
+				cargarTodosProductoServer();//venta
+				//cargarCortesProductoServer();//venta  //ya no se cargaran todos los cortes al inicio
+			}
+			else if(localStorage.getItem('perfil_tp') == "supervisor")// supervisor
+			{
+				//PUEDE HACER TODO -- VENDER Y COBRAR
+				cargarTodosProductoServer();//venta
+				//cargarCortesProductoServer();//venta //ya no se cargaran todos los cortes al inicio
+			}
+			else if(localStorage.getItem('perfil_tp') == "cobranza")
+			{
+
+			}
+			else if(localStorage.getItem('perfil_tp') == "despacho")
+			{
+				cargarFacturaDespachoServer();//despacho
+			}
 		}
 		else{
+			cargarArregloProducto(); //CARGA LOS PRODUCTOS DE BDPHONE
+			cargarCombosPhone(); //CARGA LOS COMBOS DE BDPHONE
 			if( localStorage.getItem('fecha_cartera') != app.getFecha() )
 			{
+				limpiarTablasTemporales();
 				localStorage.setItem('fecha_cartera', app.getFecha()); //asignamos fecha día
-				
 				cargarClientesRutaServer();
 			}
 			else{
@@ -213,19 +258,55 @@ $(document).ready(function (){
 		}
 	}
 
+	function limpiarTablasTemporales()
+	{
+		limpiarVentasBDPhone();//LIMPIAR LAS VENTAS DEL DIA ANTERIOR
+		//LIMPIAR LAS FACTURAS *********
+
+		limpiarCamposMostrar();//LIMPIA LOS CAMPOS DE BUSQUEDA
+	}
+
+	function limpiarCamposMostrar()
+	{
+		$("#ventasDiaCont").html(""); //LIMPIA LAS VENTAS DEL DIA A MOSTRAR
+		$("#cont-clientes-ruta").html(""); //LIMPIA LOS CLIENTES DE RUTA A MOSTRAR
+		$("#cont-clientes-todo").html(""); //LIMPIA TODOS CLIENTES A MOSTRAR
+		$("#cont-lst-buscar-producto").html(""); //LIMPIA LA BUSQUEDA DE PRODUCTOS
+	}
+
+	function limpiarVentasBDPhone()
+	{
+		var vn = null;
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM cabeceraVenta');//tx.executeSql("DELETE FROM cabeceraVenta WHERE codigoServer = '"+vn]+"';", []);
+			tx.executeSql('DELETE FROM detalleVenta');
+	  	}, function(error){
+	  		alert("Error al limpiar ventas.");
+	  	}, function() {
+		    //alert('Populated database OK');
+	  	});
+	}
+
 	function cargarTodosClienteServer()//CARGAR TODA LA LISTA DE LOS CLIENTES DEL SERVIDOR AL TELEFONO********
 	{
-		arregloTodoDatosclientes = []; //CLIENTE CON TODOS LOS DATOS
+		//arregloTodoDatosclientes = []; //CLIENTE CON TODOS LOS DATOS
 		try{
 			$.ajax({
-				url: webService+"ListaClienteVendedor",
+				url: webService+"ListadoClienteVendedor",
 				type: 'POST',
 				dataType: 'json',
 				data: {codigoVendedor: localStorage.getItem('usu_tp')},
+				beforeSend:function (){ 
+					$("#mensaje-alerta").html("cargando lista de clientes...");
+				},
 				success: function(dataR){
-					arregloTodoDatosclientes = dataR; //para obtener el detalle del cliente cuando busca
-					llenarArregloClientes(dataR, ["codCliente","razonSocial"]) //arreglo para buscar clientes
+					//arregloTodoDatosclientes = dataR; //para obtener el detalle del cliente cuando busca
+					//llenarArregloClientes(dataR, ["codCliente","razonSocial"]) //arreglo para buscar clientes
 					llenarClientesBDPhone(dataR); // 1) LLENA LOS CLIENTES A LA BD PHONE
+
+					cargarDireccionesMultipleServer();//CARGA DESPUES DE CARGAR DIRECCIONES
 				},
 				error: function(dataR){
 					Materialize.toast('Error C00001. Ruta de todos clientes servidor esta fallando.', 5000);
@@ -240,7 +321,7 @@ $(document).ready(function (){
 		}
 	}
 
-	function llenarArregloClientes(data, parametro)// sirve para buscar clientes
+	/*function llenarArregloClientes(data, parametro)// sirve para buscar clientes
 	{
 		arregloTodoclientes = [];
 		if(data.length > 0)
@@ -248,6 +329,34 @@ $(document).ready(function (){
 			for (var i = 0; i < data.length; i++) {
 				arregloTodoclientes.push({codigo: data[i][parametro[0]].toUpperCase().trim(), descripcion: data[i][parametro[1]].toUpperCase().trim()});		
 			}
+		}
+	}*/
+
+	function cargarDireccionesMultipleServer()//CARGAR TODAS LAS DIRECCIONES DE LOS CLIENTES QUE TIENEN MAS DE 2 DIRECCIONES DEL SERVIDOR AL TELEFONO********
+	{
+		try{
+			$.ajax({
+				url: webService+"ListarDireccionesMultiples",
+				type: 'POST',
+				dataType: 'json',
+				data: {codigoVendedor: localStorage.getItem('usu_tp')},
+				beforeSend:function (){
+					$("#mensaje-alerta").html("Cargando direcciones de clientes...");
+				},
+				success: function(dataR){
+					llenarDireccionesBDPhone(dataR); // 1) LLENA LOS CLIENTES A LA BD PHONE
+					cargarTodosCombosServer();
+				},
+				error: function(dataR){
+					Materialize.toast('Error F00001. Error de conexion con el servidor web cargarDireccionesMultipleServer().', 3000);
+					return false;
+			    }
+			});
+
+		}catch(er){
+			//Materialize.toast('Error C00002. Error general, reiniciar APP.', 5000);
+			console.log(er)
+			return false;
 		}
 	}
 
@@ -259,41 +368,20 @@ $(document).ready(function (){
 				type: 'POST',
 				dataType: 'json',
 				data: {},
+				beforeSend:function (){
+					$("#mensaje-alerta").html("Cargando datos de configuración...");
+				},
 				success: function(dataR){
 					llenarCombosBDPhone(dataR); // 2) LLENA LOS COMENTARIOS A LA BD
 				},
 				error: function(dataR){
-					Materialize.toast('Error CMB001. Ruta de combos no válida.', 5000);
+					Materialize.toast('Error F00001. Error de conexion con el servidor web cargarTodosCombosServer().', 3000);
 					return false;
 			    }
 			});
 
 		}catch(er){
 			Materialize.toast('Error CMB002. Error general, reiniciar APP.', 5000);
-			console.log(er)
-			return false;
-		}
-	}
-
-	function cargarDireccionesMultipleServer()//CARGAR TODAS LAS DIRECCIONES DE LOS CLIENTES QUE TIENEN MAS DE 2 DIRECCIONES DEL SERVIDOR AL TELEFONO********
-	{
-		try{
-			$.ajax({
-				url: webService+"ListarDireccionesMultiples",
-				type: 'POST',
-				dataType: 'json',
-				data: {},
-				success: function(dataR){
-					llenarDireccionesBDPhone(dataR); // 1) LLENA LOS CLIENTES A LA BD PHONE
-				},
-				error: function(dataR){
-					//Materialize.toast('Error C00001. Ruta de todos clientes servidor esta fallando.', 5000);
-					return false;
-			    }
-			});
-
-		}catch(er){
-			//Materialize.toast('Error C00002. Error general, reiniciar APP.', 5000);
 			console.log(er)
 			return false;
 		}
@@ -307,12 +395,15 @@ $(document).ready(function (){
 				type: 'POST',
 				dataType: 'json',
 				data: {},
+				beforeSend:function (){
+					$("#mensaje-alerta").html("Cargando productos...");
+				},
 				success: function(dataR){
-					llenarArregloProductos(dataR, ["codigoProd","nombreProducto"]) //arreglo para buscar clientes
+					llenarArregloProductos(dataR, ["codigoProd","nombreProducto"]); //arreglo para buscar clientes
 					llenarProductosBDPhone(dataR);
 				},
 				error: function(dataR){
-					//Materialize.toast('Error C00001. Ruta de todos clientes servidor esta fallando.', 5000);
+					Materialize.toast('Error F00001. Error de conexion con el servidor web cargarTodosProductoServer().', 3000);
 					return false;
 			    }
 			});
@@ -342,11 +433,40 @@ $(document).ready(function (){
 				type: 'POST',
 				dataType: 'json',
 				data: {},
+				beforeSend:function (){
+					$("#mensaje-alerta").html("Cargando cortes de productos...");
+				},
 				success: function(dataR){
 					llenarCorteProductosBDPhone(dataR);
 				},
 				error: function(dataR){
-					//Materialize.toast('Error C00001. Ruta de todos clientes servidor esta fallando.', 5000);
+					Materialize.toast('Error F00001. Error de conexion con el servidor web cargarCortesProductoServer().', 3000);
+					return false;
+			    }
+			});
+		}catch(er){
+			//Materialize.toast('Error C00002. Error general, reiniciar APP.', 5000);
+			console.log(er)
+			return false;
+		}
+	}
+
+	function cargarFacturaDespachoServer()
+	{
+		try{
+			$.ajax({
+				url: webService+"listarFacturasCliente",
+				type: 'POST',
+				dataType: 'json',
+				data: {codigoVendedor: localStorage.getItem('usu_tp')},
+				beforeSend:function (){
+					$("#mensaje-alerta").html("Cargando facturas...");
+				},
+				success: function(dataR){
+					llenarFacturaDespachoBDPhone(dataR);
+				},
+				error: function(dataR){
+					Materialize.toast('Error F00001. Error de conexion con el servidor web cargarFacturaDespachoServer().', 3000);
 					return false;
 			    }
 			});
@@ -359,113 +479,280 @@ $(document).ready(function (){
 
 	function llenarClientesBDPhone(data)
 	{
-		//LLENA LA LISTA DE TODOS LOS CLIENTES ASIGNADOS AL CONSULTOR
-		cargarClientesRutaPhone();
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM cliente');
+		    for (var i = 0; i < data.length; i++) 
+			{
+				tx.executeSql('INSERT INTO cliente VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [data[i].codCliente, data[i].razonSocial, data[i].ruc, data[i].clasificacion, data[i].giro, data[i].direccion_p, data[i].contacto, data[i].celContacto, data[i].deuda, data[i].fechaDeuda, data[i].despacho, data[i].fechaUltimaVisita, data[i].contactoUltimaVisita, data[i].atendido, data[i].ruta, data[i].tipo]);
+         	}	
+         	cargarClientesRutaPhone();//si no se pone dentro no funciona
+	  	}, function(error){
+	  		alert("Error al almacenar datos del cliente.");
+		}, function() {});
 	}
 
 	function llenarCombosBDPhone(data)
 	{
-		//LLENAR TODOS LOS COMENTARIOS A LA BD PHONE
-		cargarCombosPhone();
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM combo');
+		    for (var i = 0; i < data.length; i++) 
+			{
+				tx.executeSql('INSERT INTO combo VALUES (?,?,?,?)', [data[i].codigo, data[i].codClase, data[i].descripcion, data[i].dpd]);
+         	}	
+         	cargarCombosPhone();
+	  	}, function(error){
+	  		alert("Error al almacenar datos de combos.");
+		    //alert('Transaction ERROR: ' + error.message);
+	  	}, function() {});
+		
 	}
 
 	function llenarDireccionesBDPhone(data)
 	{
-		//LLENAR TODOS LAS DIRECCIONES A LA BD PHONE
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM direccionCliente');
+		    for (var i = 0; i < data.length; i++) 
+			{
+				tx.executeSql('INSERT INTO direccionCliente VALUES (?,?,?)', [data[i].codigoDir, data[i].codigoCliente, data[i].direccion]);
+         	}	
+	  	}, function(error){
+	  		alert("Error al almacenar direcciones del cliente.");
+		    //alert('Transaction ERROR: ' + error.message);
+	  	}, function() {
+		    //alert('Populated database OK');
+	  	});
 	}
 
 	function llenarProductosBDPhone(data)
 	{
-		//LLENAR TODOS LAS PRODUCTOS A LA BD PHONE
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM producto');
+		    for (var i = 0; i < data.length; i++) 
+			{
+				tx.executeSql('INSERT INTO producto VALUES (?,?,?,?,?,?,?)', [ data[i].codigoProd.trim(), data[i].nombreProducto.trim(), data[i].precio, data[i].precioCredito, data[i].stock, data[i].undMedida.trim(), data[i].corte.trim()]);
+         	}	
+	  	}, function(error){
+	  		alert("Error al almacenar productos en la base de datos.");
+		    //alert('Transaction ERROR: ' + error.message);
+	  	}, function() {
+		    //alert('Populated database OK');
+	  	});
 	}
 
 	function llenarCorteProductosBDPhone(data)
 	{
-		//LLENAR TODOS LOS CORTES DE PRODUCTOS A LA BD PHONE
+		//productoCorte (codigoCorte, codigoProd, precio, corte)
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM productoCorte');
+		    for (var i = 0; i < data.length; i++) 
+			{
+				tx.executeSql('INSERT INTO productoCorte VALUES (?,?,?,?)', [data[i].codigoCorte, data[i].codigoProd, data[i].precio, data[i].corte]);
+         	}	
+         	//alert("corte ok");
+	  	}, function(error){
+	  		alert("Error al almacenar corte de productos en la base de datos.");
+		    //alert('Transaction ERROR: ' + error.message);
+	  	}, function() {
+		    //alert('Populated database OK');
+	  	});
 	}
 
-	function cargarArregloClientes()
+	function llenarFacturaDespachoBDPhone(data)
 	{
-		//SELECT A LA BD PHONE DE TODO LOS CLIENTES
-		var data = '[{"codCliente":"CL0001", "razonSocial":"Roinet SAC", "ruc":"27364563721", "clasificacion":"Pto. Mercado", "giro":"Informatica", "direccion_p":"Shell 343 - Miraflores", "contacto":"Rene Ramirez", "celContacto":"999873647", "deuda":203.04, "fechaDeuda":"2016-08-30", "despacho": true, "fechaUltimaVisita":"2016-08-15", "contactoUltimaVisita":"Gisella Noles", "atendido":"no", "ruta":false, "tipo":"empresa"},'+
-				'{"codCliente":"CL0002", "razonSocial":"Canto Rodado SAC", "ruc":"27345345515", "clasificacion":"Edificio", "giro":"robotica", "direccion_p":"Aramburu 342 - Miraflores", "contacto":"Alfredo Arroyo", "celContacto":"939384756", "deuda":0.00, "fechaDeuda":null, "despacho": false, "fechaUltimaVisita":"2016-07-15", "contactoUltimaVisita":"Luis Deza", "atendido":"no", "ruta":true, "tipo":"empresa"},'+
-				'{"codCliente":"CL0003", "razonSocial":"Asombra Perú SAC", "ruc":"224354567656", "clasificacion":"Dpt. Bodega", "giro":"metales", "direccion_p":"ARoque Boloña - Surco", "contacto":"Tamara Rodriguez", "celContacto":"919293949", "deuda":855.55, "fechaDeuda":"2016-07-40", "despacho": false, "fechaUltimaVisita":"2016-08-20", "contactoUltimaVisita":"Alessandra Mora", "atendido":"no", "ruta":true, "tipo":"empresa"},'+
-				'{"codCliente":"CL0004", "razonSocial":"La Lujuria SAC", "ruc":"58374635263", "clasificacion":"Bdga Casa", "giro":"Tamalitos", "direccion_p":"los Jazmines 123 - La Molina", "contacto":"Sofia Roque", "celContacto":"939928374", "deuda":0.00, "fechaDeuda":null, "despacho": false, "fechaUltimaVisita":"2016-08-17", "contactoUltimaVisita":"Javier Gadea", "atendido":"no", "ruta":false, "tipo":"empresa"}]';
-		data = JSON.parse( convertirJSONTemp(data) ); 
-		llenarArregloClientes(data, ["codCliente","razonSocial"]) //arreglo para buscar clientes
-		arregloTodoDatosclientes = data;
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM factura');
+		    for (var i = 0; i < data.length; i++) 
+			{
+				//factura (codFactura integer primary key autoincrement, codFacturaServer, codCliente, codVentaServer, importeFactura, estado, fechaHora)
+				tx.executeSql('INSERT INTO factura (codFacturaServer, codCliente, codVentaServer, importeFactura, estado, fechaHora) VALUES (?,?,?,?,?,?)', [data[i].codFacturaServer, data[i].codCliente, data[i].codVentaServer, data[i].importeFactura, data[i].estado, data[i].fechaHora]);
+			}	
+	  	}, function(error){
+	  		alert("Error al almacenar facturas en la base de datos. "+error);
+	  	}, function() {});
+	}
+
+	/*function cargarArregloClientes()
+	{
+		var data = new Array();
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM cliente',[],function(tx,result){
+			    for(var i=0; i<result.rows.length; i++){
+			       	data.push( result.rows.item(i) );
+			    }
+				//llenarArregloClientes(data, ["codCliente","razonSocial"]) //arreglo para buscar clientes
+				//arregloTodoDatosclientes = data;
+			});
+	  	}, function(error){
+	  		alert("Error al llamar datos de la Base de Datos, AC.")
+	  	}, function(){});
+	}*/
+
+	function cargarArregloProducto()
+	{
+		var data = new Array();
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM producto',[],function(tx,result){
+			    for(var i=0; i<result.rows.length; i++){
+			       	data.push( result.rows.item(i) );
+			    }
+				llenarArregloProductos(data, ["codigoProd","nombreProducto"])
+			});
+	  	}, function(error){
+	  		alert("Error al llamar datos de la Base de Datos, PR.")
+	  	}, function(){});
 	}
 
 	function cargarClientesRutaPhone()
 	{
-		//CARGA CLIENTES DESDE LA BASE DE DATOS PHONE
-		//LLENAR DIRECCION A LA TABLA DIRECCIONES DEL BD PHONE
-		/*--SELECT DE BD PHONE--*/var data = '[{"codCliente":"CL0002", "razonSocial":"Canto Rodado SAC", "ruc":"27345345515", "clasificacion":"Edificio", "giro":"robotica", "direccion_p":"Aramburu 342 - Miraflores", "contacto":"Alfredo Arroyo", "celContacto":"998374656", "deuda":0.00, "fechaDeuda":null, "despacho": false, "fechaUltimaVisita":"2016-07-15", "contactoUltimaVisita":"Luis Deza", "atendido":"si", "ruta":true, "tipo":"empresa"},'+
-												'{"codCliente":"CL0003", "razonSocial":"Asombra Perú SAC", "ruc":"224354567656", "clasificacion":"Dpt. Bodega", "giro":"metales", "direccion_p":"ARoque Boloña - Surco", "contacto":"Tamara Rodriguez", "celContacto":"989746586", "deuda":855.55, "fechaDeuda":"2016-07-40", "despacho": false, "fechaUltimaVisita":"2016-08-20", "contactoUltimaVisita":"Alessandra Mora", "atendido":"no", "ruta":true, "tipo":"empresa"}]';
-		data = JSON.parse( convertirJSONTemp(data) );
-		mostrarClientesRuta(data);
-	}
+		var data = new Array();
+		$.support.cors = true;
 
-	function cargarCombosPhone()
-	{
-		//CARGA COMBOS DESDE LA BASE DE DATOS PHONE
-		/*--SELECT DE BD PHONE--*/var data = '[{"codigo":"TE0001", "descripcion":"Entrega sin problemas"},'+
-												'{"codigo":"TE0002", "descripcion":"Entrega SV"},'+
-												'{"codigo":"TE0003", "descripcion":"Rechazo por completo"}]';
-		data = JSON.parse( convertirJSONTemp(data) );
-		//console.log(data)
-
-		var data1 = '[{"codigo":"CD0001", "descripcion":"Comentario DS 1"},'+
-					'{"codigo":"CD0002", "descripcion":"Comentario DS 2"}]';
-		data1 = JSON.parse( convertirJSONTemp(data1) );
-		//console.log(data1)
-
-		var data2 = '[{"codigo":"CC0001", "descripcion":"Comentario CC 1"},'+
-					'{"codigo":"CC0002", "descripcion":"Comentario CC 2"}]';
-		data2 = JSON.parse( convertirJSONTemp(data2) );
-		
-
-		mostrarCombos(data, "#tipo-entrega-dpc", false); //combo tipo de entrega
-		mostrarCombos(data1, "#cbo-comentario-dpc", true); //combo comentario despacho opcion -> no cobrar
-		mostrarCombos(data2, "#cbo-comentario-cbz", true);	//combo comentario cobranza opcion -> no pagó
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM cliente WHERE ruta=?',[true],function(tx,result){
+				if(result.rows.length > 0){
+					for(var i=0; i<result.rows.length; i++){
+			       		data.push( result.rows.item(i) );
+				    }
+					mostrarClientesRuta(data);
+				}
+				else{
+					Materialize.toast('Error CLP0001. No tienes clientes en ruta para hoy.', 3000); //CLP0001 no encuentra clientes ruta.
+				}
+			    
+			});
+	  	}, function(error){
+	  		alert("Error al llamar datos de la BDPhone, CRP.")
+	  	}, function(){});
 	}
 
 	function cargarClientesRutaServer() // CARGA USUARIOS DE LA RUTA DEL DIA SOLO EN EL CASO DE CAMBIAR DE DIA ***********
 	{
-		//CARGA CLIENTES DE LA RUTA DEL DIA DESDE EL SERVIDOR
-		//ACTUALIZA ESTADO EN TABLA CLIENTES PHONE; SI NO ENCUENTRA EL CLIENTE AGREGAR A LA BD PHONE
-
 		try{
 			$.ajax({
-				url: webService+"ListarClienteVendedoRuta",
+				url: webService+"ListarClienteVendedorRuta",
 				type: 'POST',
+				dataType: 'json',
 				data: {codigoVendedor: localStorage.getItem('usu_tp')},
+				beforeSend:function (){
+					$("#mensaje-alerta").html("Cargando clientes de ruta...");
+				},
 				success: function(dataR){
-					// EL PARAMETRO TIPO VA DECIDIR SI SE AGREGA LA EMPRESA O SOLO ACTUALIZA
-					actualizaClientesRutaPhone(data);	
+					//actualizaClientesRutaPhone(dataR);	
+					cambiarEstadoClienteRutaPhone(dataR);
 				},
 				error: function(dataR){
-					//Materialize.toast('Error C00001. Ruta de todos clientes servidor esta fallando.', 5000);
-					return false;
+					cerrarAlerta();
+					Materialize.toast('Error al cargar clientes de ruta.', 3000);
+					$.mobile.changePage("#home");
 			    }
 			});
-
 		}catch(er){
-			//Materialize.toast('Error C00002. Error general, reiniciar APP.', 5000);
-			console.log(er)
+			alert("Error CLS0001. Error al cargar clientes de ruta del día.");
 			return false;
 		}
 		
 	}
 
-	function actualizaClientesRutaPhone(data)
+	/*function actualizaClientesRutaPhone(data)
 	{
-		//ACTUALIZAR TABLA EN EL TELEFONO /****IMPORTANTE****/
-		cargarClientesRutaPhone()
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM cliente',[],function(tx,result){
+				for(var i=0; i<result.rows.length; i++){
+					fila=result.rows.item(i)
+			       	tx.executeSql("UPDATE cliente SET atendido = 'no', ruta='"+false+"' WHERE codCliente = '"+fila['codCliente']+"';", []); //actualiza el cliente como no ruta y no atendido
+			    }
+			    cambiarEstadoClienteRutaPhone(data);
+			});
+	  	}, function(error){
+	  		alert("error al actualizar clientes ruta actualizaClientesRutaPhone(). "+error)
+	  	}, function(){});
+	}*/
+
+	function cambiarEstadoClienteRutaPhone(data)//ACTUALIZA ESTADO EN TABLA CLIENTES PHONE; SI NO ENCUENTRA EL CLIENTE AGREGAR A LA BD PHONE
+	{
+		//cargarArregloClientes(); //LLENA ARREGLO DE CLIENTES EXISTENTES
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) 
+		{
+			tx.executeSql("UPDATE cliente SET atendido = 'no', ruta='"+false+"' ;", []);//cambiamos a todos como no atendido y ruta(false);
+
+			for (var i = 0; i < data.length; i++) {
+				if(data[i].tipoR == "existente")// EL PARAMETRO "tipoR" VA DECIDIR SI SE AGREGA LA EMPRESA O SOLO ACTUALIZA
+				{
+					tx.executeSql("UPDATE cliente SET ruta='"+true+"', deuda='"+data[i].deuda+"', fechaDeuda='"+data[i].fechaDeuda+"', despacho='"+data[i].despacho+"', fechaUltimaVisita='"+data[i].fechaUltimaVisita+"', contactoUltimaVisita='"+data[i].contactoUltimaVisita+"' WHERE codCliente = '"+data[i].codCliente+"';", []); // actualizamos cliente existente
+				}
+				else if(data[i].tipoR == "nuevo")
+				{
+					/*var validar = false;//PARA VALIDAR SI EL CLIENTE ES NUEVO
+					for (var j = 0; j < arregloTodoDatosclientes.length; j++) 
+					{
+						if (arregloTodoDatosclientes[j].codCliente == data[i].codCliente) {
+							validar = true;
+						}
+					}
+
+					if(validar == false){ //si no existe se agrega*/
+						//validar si el cliente se encuentra en la bdphone
+						tx.executeSql('INSERT INTO cliente VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [data[i].codCliente, data[i].razonSocial, data[i].ruc, data[i].clasificacion, data[i].giro, data[i].direccion_p, data[i].contacto, data[i].celContacto, data[i].deuda, data[i].fechaDeuda, data[i].despacho, data[i].fechaUltimaVisita, data[i].contactoUltimaVisita, data[i].atendido, data[i].ruta, data[i].tipo]);
+					//}
+				}
+			}
+			cargarClientesRutaPhone();
+	  	}, function(error){
+	  		alert("error al actualizar clientes ruta cambiarEstadoClienteRutaPhone(). "+error)
+	  	}, function(){});
+	}
+
+	function cargarCombosPhone()
+	{
+		mostrarCombos("CS0001", "#tipo-entrega-dpc", false); //combo tipo de entrega
+		mostrarCombos("CS0002", "#cbo-comentario-dpc", true); //combo comentario despacho opcion -> no cobrar
+		mostrarCombos("CS0003", "#cbo-comentario-cbz", true);	//combo comentario cobranza opcion -> no pagó
+	}
+
+	function mostrarCombos(codClase, idCombo, index)
+	{
+		$(idCombo).html("");
+		if(index == true){ $(idCombo).append('<option value="0">Sin comentarios</option>'); }
+
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT codigo, descripcion FROM combo WHERE codClase=?',[codClase],function(tx,result){
+				for(var i=0; i<result.rows.length; i++){
+					fila=result.rows.item(i)
+			       	$(idCombo).append('<option value="'+fila['codigo']+'">'+fila['descripcion']+'</option>');
+			    }
+			    $(idCombo).material_select();
+			});
+	  	}, function(error){
+	  		alert("Error al llamar combo de la Base de Datos Phone.")
+	  	}, function(){});
 	}
 
 	function mostrarClientesRuta(data)//MOSTRAR CLIENTES EN RUTA AL VENDEDOR****
 	{
+		cerrarAlerta();
 		// ESTADOS DATA.ATENDIDO (SI = TIENE VENTA ESE DÍA, NO = NO TIENE VENTA, FALLA = TIENE VENTA PERO UNA FALLA EN EL ENVIO) **********
 		// CREAR UN AUTOCOMPLETE PARA BUSCAR (codigo, RZ)
 		$("#cont-clientes-ruta").html("")
@@ -490,43 +777,29 @@ $(document).ready(function (){
 		var strNI = '<li id="'+id+'-'+data.codCliente.toUpperCase()+'" class="'+clase+'"><div class="collapsible-header"><i class="material-icons" id="estado-cli-ruta-'+data.codCliente.toUpperCase()+'">';
 				if(data.atendido == "si"){strNI += 'done';}else if(data.atendido == "falla"){strNI += 'warning';}
 			    strNI += '</i><span class="razonSocialVentaGeneral"><p class="codClienteVentaGeneral">'+data.codCliente.toUpperCase()+'</p> '+ data.razonSocial.toUpperCase().substring(0,15)+'... </span><div class="estadoEmpresa"><span class="conVenta"></span>';
-			    if(data.despacho == true){strNI += '<span class="conDespacho"></span>';}
+			    if(data.despacho == true || data.despacho == "true"){strNI += '<span class="conDespacho"></span>';}
 			    if(data.deuda > 0){strNI += '<span class="conDeuda"></span>';}
-			    strNI += '</div></div><div class="collapsible-body bgGray"><div style="text-align: center;">'+
-			    		 //'<div class="col s12"><a id="" class="col s12 waves-effect waves-light btn-large" style="background: #FF5252;">NO ACTUAR</a></div>'+
-			             '<a class="waves-effect botonOpciones accent-color btn-clientes-venta" id="'+arrId[0]+'-'+data.codCliente+'" href="javascript:void(0)">VENDER</a>'+
-			             '<a class="waves-effect botonOpciones accent-color btn-clientes-despacho" id="'+arrId[1]+'-'+data.codCliente+'" href="javascript:void(0)">DESPACHAR</a>'+
-			             '<a class="waves-effect botonOpciones accent-color btn-clientes-cobrar" id="'+arrId[2]+'-'+data.codCliente+'" href="javascript:void(0)">COBRAR</a>'+
-			             '<a class="waves-effect botonOpciones btn-clientes-noActuar" id="'+arrId[3]+'-'+data.codCliente+'" href="javascript:void(0)" style="background: #ff9a00;">NO ACTUAR</a></div><div class="contenedor-demp">'+
-			             '<div class="cont-detEmp"><div class="para-detEmp">Giro:</div><div class="val-detEmp">'+data.giro+'</div></div>'+
-						 '<div class="cont-detEmp"><div class="para-detEmp">Clasificación:</div><div class="val-detEmp">'+data.clasificacion+'</div></div>'+
-						 '<div class="cont-detEmp"><div class="para-detEmp">Dirección:</div><div class="val-detEmp">'+data.direccion_p+'</div></div>'+
-						 '<div class="cont-detEmp"><div class="para-detEmp">Contacto:</div><div class="val-detEmp">'+data.contacto+' <br> '+data.celContacto+'</div></div>';
+			    strNI += '</div></div><div class="collapsible-body bgGray"><div style="text-align: center;">';
+			    
+			    if(localStorage.getItem('perfil_tp') == "venta" || localStorage.getItem('perfil_tp') == "supervisor"){ strNI += '<a class="waves-effect botonOpciones accent-color btn-clientes-venta" id="'+arrId[0]+'-'+data.codCliente+'" href="javascript:void(0)">VENDER</a>'; }
+			    if(localStorage.getItem('perfil_tp') == "despacho" || localStorage.getItem('perfil_tp') == "supervisor"){ strNI += '<a class="waves-effect botonOpciones accent-color btn-clientes-despacho" id="'+arrId[1]+'-'+data.codCliente+'" href="javascript:void(0)">DESPACHAR</a>'; }
+			    if(localStorage.getItem('perfil_tp') == "cobranza" || localStorage.getItem('perfil_tp') == "supervisor"){ strNI += '<a class="waves-effect botonOpciones accent-color btn-clientes-cobrar" id="'+arrId[2]+'-'+data.codCliente+'" href="javascript:void(0)">COBRAR</a>'; }
+			    
+			    strNI += '<a class="waves-effect botonOpciones btn-clientes-noActuar" id="'+arrId[3]+'-'+data.codCliente+'" href="javascript:void(0)" style="background: #ff9a00;">NO ACTUAR</a></div><div class="contenedor-demp">';
+			    if(data.giro != "" && data.giro != null){ strNI += '<div class="cont-detEmp"><div class="para-detEmp">Giro:</div><div class="val-detEmp">'+data.giro+'</div></div>'; }
+				if(data.clasificacion != "" && data.clasificacion != null){ strNI += '<div class="cont-detEmp"><div class="para-detEmp">Clasificación:</div><div class="val-detEmp">'+data.clasificacion+'</div></div>'; }
+				if(data.direccion_p != "" && data.direccion_p != null){ strNI += '<div class="cont-detEmp"><div class="para-detEmp">Dirección:</div><div class="val-detEmp">'+data.direccion_p+'</div></div>'; }
+				if(data.contacto != "" && data.contacto != null){ strNI += '<div class="cont-detEmp"><div class="para-detEmp">Contacto:</div><div class="val-detEmp">'+data.contacto+' <br> '+data.celContacto+'</div></div>'; }
 				if(data.deuda > 0){strNI += '<div class="cont-detEmp"><div class="para-detEmp">Deuda:</div><div class="val-detEmp">S/ 203 <br> (18/07/2016)</div></div>';}
-				if(data.despacho == true){strNI +='<div class="cont-detEmp"><div class="para-detEmp">Despacho pendiente:</div><div class="val-detEmp">SI</div></div>';}
-				strNI += '<div class="cont-detEmp"><div class="para-detEmp">Ultima visita:</div><div class="val-detEmp">'+data.fechaUltimaVisita;
+				if(data.despacho == true || data.despacho == "true"){strNI +='<div class="cont-detEmp"><div class="para-detEmp">Despacho pendiente:</div><div class="val-detEmp">SI</div></div>';}
+				if(data.fechaUltimaVisita != "" && data.fechaUltimaVisita != null ){ strNI += '<div class="cont-detEmp"><div class="para-detEmp">Ultima visita:</div><div class="val-detEmp">'+data.fechaUltimaVisita; }
 				if(data.contactoUltimaVisita != "" && data.contactoUltimaVisita != null ){strNI +=' <br> '+data.contactoUltimaVisita}
 				strNI += '</div></div></div></div></li>';
 		return strNI;
 		//<div class="col s12"><a id="noCliente" class="col s12 waves-effect waves-light btn-large" style="background: #FF5252;">SIN VENTA</a></div>
 	}
 
-	function mostrarCombos(data, idCombo, index)
-	{
-		$(idCombo).html("");
-		if(data.length > 0)
-		{
-			if(index == true){ $(idCombo).append('<option value="0">Sin comentarios</option>'); }
-
-			for (var i = 0; i < data.length; i++) {
-				$(idCombo).append('<option value="'+data[i].codigo+'">'+data[i].descripcion+'</option>');
-			}
-			$(idCombo).material_select();
-		}
-	}
-
 	$("body").on('keyup', '#buscar-ruta', function(){
-	//$("#buscar-ruta").keyup(function(){
 		var bus = $(this).val().toUpperCase().trim();
 		buscarClienteRuta("#itm-", ".item-lista-ruta", arregloRuta, bus);
 	});
@@ -552,30 +825,31 @@ $(document).ready(function (){
 		}
 	}
 
-	$("body").on('keyup', '#buscarAllCliente', function(){
-	//$("#buscarAllCliente").keyup(function(){
-		var bus = $(this).val().toUpperCase().trim();
-		buscarCliente(arregloTodoclientes, bus);
+	$("body").on('click', '#btnBuscarClieteNR', function(){
+		var bus = $("#buscarAllCliente").val().toUpperCase().trim();
+		buscarClientePhone(bus);
 	});
 
-	function buscarCliente(arreglo, buscar)
+	function buscarClientePhone(palabra)
 	{
-		var na = new Array();
-		$("#cont-clientes-todo").html("")
-		var data = arregloTodoDatosclientes;
-		if(buscar.length > 0 && arreglo.length > 0)
-		{
-			for (var i = 0; i < arreglo.length; i++) 
-			{
-				if(arreglo[i].descripcion.indexOf(buscar) != -1 || arreglo[i].codigo.indexOf(buscar) != -1)
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql("SELECT * FROM cliente WHERE codCliente like '%"+palabra+"%' OR razonSocial like '%"+palabra+"%' ;",[],function(tx,result){
+				if(result.rows.length > 0)
 				{
-					if(arreglo[i].codigo == data[i].codCliente.toUpperCase()){
-						var strNI = crearItemCliente(data[i], ["tnv","tnd","tnc","tnca"], "" ,"itmt");
+					for (var i = 0; i < result.rows.length; i++) {
+						fila = result.rows.item(i);
+						var strNI = crearItemCliente(fila, ["tnv","tnd","tnc","tnca"], "" ,"itmt");
 						$("#cont-clientes-todo").append(strNI);
 					}
+				}else{
+					$("#cont-clientes-todo").html("NO SE ENCONTRARON COINCIDENCIAS");
 				}
-			}	
-		}
+			});
+		}, function(error){
+		  	alert("Error al cargar clientes. "+error);
+		}, function() {});
 	}
 
 	$("body").on('keyup', '#buscarAllProducto', function(){
@@ -601,8 +875,98 @@ $(document).ready(function (){
 	}
 
 	$("body").on('click', '.btn-clientes-despacho', function(e){
-		$.mobile.changePage("#VistaDespachar");
+		try{
+			var idStr = $(this).attr("id");
+			var id = idStr.split("-");
+			limpiarFormularioDespacho();
+			iniciarDespacho( id[1] );
+		}catch(er){
+			alert(er);
+		}
 	});
+
+	function limpiarFormularioDespacho()
+	{
+		$("#nom-emp-des").html( "" );
+		$("#nom-con-des").html( "" );
+		$("#nom-emp-des").html( "" );
+		$("#contFacturaDespacho").html( "" );
+	}
+
+	function iniciarDespacho(codCliente)
+	{
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM cliente WHERE codCliente=?',[codCliente],function(tx,result){
+				if(result.rows.length > 0)
+				{
+					fila = result.rows.item(0);
+					if(fila['despacho'] == "true" || fila['despacho'] == true)
+					{
+						cargarFacturaDespahoPhone(codCliente, fila); //fila = fata cliente
+					}else{
+						Materialize.toast('Cliente no tiene despacho pendiente.', 3000);
+					}
+				}
+			});
+		}, function(error){
+		  	alert("Error al cargar información del cliente iniciarDespacho. "+error);
+		}, function() {});
+	}
+
+	function cargarFacturaDespahoPhone(codCliente, dataCliente)
+	{
+		var dataF = new Array();
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM factura WHERE codCliente=?',[codCliente],function(tx,result){
+				if(result.rows.length > 0)
+				{
+					for (var i = 0; i < result.rows.length; i++) {
+						dataF.push( result.rows.item(i) );
+					}
+					llenarFormularioDespacho(codCliente, dataCliente, dataF); //dataF = data factura
+					$.mobile.changePage("#VistaDespachar");
+				}
+			});
+		}, function(error){
+		  	alert("Error al cargar información de las facturas. "+error);
+		}, function() {});
+	}
+
+	function llenarFormularioDespacho(codCliente, dataCliente, dataFactura)
+	{
+		$("#nom-emp-des").html( dataCliente['razonSocial'] );
+		$("#nom-con-des").html( dataCliente['contacto'] );
+
+		var totalPagar = 0;
+		for(var i = 0; i < dataFactura.length; i++) {
+			var str = crearItemFactura( dataFactura[i] );
+			totalPagar += parseFloat(dataFactura[i].importeFactura);
+			totalPagar = parseFloat(totalPagar.toFixed(8));
+			$("#contFacturaDespacho").append(str);
+		}
+
+		$("#totalFacturaDespacho").html( formatNumber.new(totalPagar, "S/ ") );
+	}
+
+	function crearItemFactura(data)
+	{
+		var str = '<li><p><input type="checkbox" class="filled-in" id="fac-dv-cod-'+data['codFactura']+'" checked="checked" />';
+            str += '<label for="fac-dv-cod-'+data['codFactura']+'">'+data['codFacturaServer'];
+            if( data['estado'] == "si" )
+            { 
+            	str += '<span class="pagoContado">';
+            }
+            else if( data['estado'] == "no" )
+            { 
+            	str += '<span class="pagoCredito">';
+            }
+            str += '</span></label></p><span class="precio-fac-dpc">S/ '+data['importeFactura']+'</span></li>';
+		return str;
+	}
 
 	$("body").on('click', '.btn-clientes-cobrar', function(e){
 		$.mobile.changePage("#VistaCobrar");
@@ -617,35 +981,73 @@ $(document).ready(function (){
 	$("body").on('click', '.btn-clientes-venta', function(e){
 		var idStr = $(this).attr("id");
 		var id = idStr.split("-")
-		var estado = $("#estado-cli-ruta-"+id[1]).html();
-		if(estado == "done"){
-			Materialize.toast('Ya tiene una venta con el cliente', 3000);
-			return false;
-		}
-		else if(estado == "warning"){
-			Materialize.toast('Tiene una venta por sincronizar con el cliente.', 3000);
-			return false;
-		}
-		else{
-			iniciarNuevaVenta(idStr);
-		}
+		localStorage.setItem('horaInicio_tp', app.getHora());//hora de inicio de la venta
+		validarIniciarNuevaVenta( id[1] );
 	});
 
-	function iniciarNuevaVenta(str){
-		var	id = str.split("-");
-		idClienteVenta = id[1]; //OBTENEMOS CODIGO DEL CLIENTE NUEVA VENTA
+	function validarIniciarNuevaVenta(codCliente)
+	{
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM cliente WHERE codCliente=?',[codCliente],function(tx,result){
+				if(result.rows.length > 0)
+				{
+					fila = result.rows.item(0);
+					switch( fila['atendido'] ){
+					    case "si":
+					        Materialize.toast('Cliente ya ha sido atendido.', 3000);
+					        break;
+					    case "no":
+					        cargarDireccionesClientePhone(codCliente, fila); //fila = datosCliente
+					        break;
+				        case "falla":
+					        Materialize.toast('Tiene una venta por sincronizar con el cliente.', 3000);
+					        break;
+					    default:
+					        break;
+					}
+				}
+			});
+		}, function(error){
+		  	alert("Error al cargar información del cliente. "+error);
+		}, function() {});
+	}
+
+	function cargarDireccionesClientePhone(codCliente, dataCliente)
+	{
+		//codigoDir, codigoCliente, direccion
+		var dataD = new Array();
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM direccionCliente WHERE codigoCliente=?',[codCliente],function(tx,result){
+				if(result.rows.length > 0)
+				{
+					for (var i = 0; i < result.rows.length; i++) {
+						dataD.push( result.rows.item(i) );
+					}
+				}else{
+					dataD = [];
+				}
+				iniciarNuevaVenta(codCliente, dataCliente, dataD); //dataD = DataDirecciones
+			});
+		}, function(error){
+		  	alert("Error al actualizar respuesta server. "+error);
+		}, function() {});
+	}
+
+	var clienteRuta = true; //valida si el cliente que le esta viendiendo esta en ruta.
+
+	function iniciarNuevaVenta(codCliente, dataCliente, dataDirec)
+	{
+		idClienteVenta = codCliente; //OBTENEMOS CODIGO DEL CLIENTE NUEVA VENTA
 		limpiarFormularioNuevaVenta()//limpiar todos los datos 
+
 		$("#id-cliente-nv").val(idClienteVenta);
-		
-		/*SELECT TABLA CLIENTE BD PHONE, FILTRO IDCLIENTE */var dataCliente = '[{"codCliente":"CL0002", "razonSocial":"Canto Rodado SAC", "ruc":"27345345515", "direccion_p":"Aramburu 342 - Mirafloress", "atendido":"si", "ruta":true, "tipo":"empresa"}]';
-		dataCliente = JSON.parse( convertirJSONTemp(dataCliente) );
+		$("#ruc-cliente-nv").val(dataCliente['ruc']);//ruc para realizar la consulta de corte producto
 
-		/*SELECT TABLA DIRECCIONES BD PHONE, FILTRO IDCLIENTE */var dataDirec = '[{"codigoDir":"DI0001", "codigoCliente":"CL0002", "direccion":"Aramburu 342 - Miraflores"},'+
-			'{"codigoDir":"DI0002", "codigoCliente":"CL0002", "direccion":"Los portales 123- SJM"},'+
-			'{"codigoDir":"DI0003", "codigoCliente":"CL0002", "direccion":"Angamos 342 - El Agustino"}]';
-		dataDirec = JSON.parse( convertirJSONTemp(dataDirec) );
-
-		$("#razon-social-nv").val(dataCliente[0].razonSocial)
+		$("#razon-social-nv").val(dataCliente['razonSocial'])
 
 		if(dataDirec.length > 0)
 		{
@@ -664,14 +1066,16 @@ $(document).ready(function (){
 			$("#select-direcccion-nv").hide();
 			$("#input-direcccion-nv").show();
 
-			$("#inp-direccion-nv").val(dataCliente[0].direccion_p)
+			$("#inp-direccion-nv").val(dataCliente['direccion_p'])
 		}
 
-		if(dataCliente[0].tipo == "empresa")
+		clienteRuta = dataCliente['ruta']; //indicamos si el cliente esta en ruta o no
+
+		if(dataCliente['tipo'] == "empresa")
 		{
 			$("#rdb-factura").prop("checked", true);
 		}
-		else if(dataCliente[0].tipo == "persona")
+		else if(dataCliente['tipo'] == "persona")
 		{
 			$("#rdb-boleta").prop("checked", true);
 		}
@@ -683,6 +1087,7 @@ $(document).ready(function (){
 	{
 		arregloPedidosNV = []; //limpia arreglo de ventas
 		$("#id-cliente-nv").val(0);
+		$("#ruc-cliente-nv").val(0);
 		$("#razon-social-nv").val("");
 		$("#inp-direccion-nv").val("");
 		$("#sel-direccion-nv").html("");
@@ -695,8 +1100,45 @@ $(document).ready(function (){
 
 	$("body").on('click', '#agregarCliente', function(e){
 		//llena los datos a un nuevo pedido y envia al formulario nuevo pedido
-		$.mobile.changePage("#FormNuevaVenta");
+		//$.mobile.changePage("#FormNuevaVenta");
+
+		var obj =  {
+					codVendedor: localStorage.getItem('usu_tp'),
+					numeroDocumento: $("#ndoc-ncli").val(),
+					nombre: $("#cliente-ncli").val(),
+					direccion: $("#direccion-ncli").val(),
+					codClase: $("#opcion-clase-cliente").val()
+					};
+		guardarNuevoCliente(obj);
 	});
+
+	function guardarNuevoCliente(dataNC)
+	{
+		try{
+			$.ajax({
+				url: webService+"guardarNuevoCliente",
+				type: 'POST',
+				dataType: 'json',
+				data: {datos: dataNC},
+				beforeSend:function (){
+					abrirAlerta("Guardando cliente...");
+				},
+				success: function(dataR){
+					cerrarAlerta();
+					Materialize.toast('Cliente guardado con éxito.', 3000);
+					$.mobile.changePage("#home"); //QUE VAYA A NUEVA VENTA
+				},
+				error: function(dataR){
+					cerrarAlerta();
+					Materialize.toast('Error al guardar cliente en el servidor.', 3000);
+					return false;
+			    }
+			});
+		}catch(er){
+			alert("Error NC0001. Error al guardar nuevo cliente guardarNuevoCliente().");
+			return false;
+		}
+	}
 
 	$("body").on('click', '#btnBuscarProducto', function(e){
 		$.mobile.changePage("#FormBuscarProducto");
@@ -720,28 +1162,21 @@ $(document).ready(function (){
 	$("body").on('click', '#aceptarFrmVenta', function(e){
 		if (arregloPedidosNV.length > 0)
 		{
-			var dirEntrega = $("#inp-direccion-nv").val();
-			if(dirEntrega == "")
-			{
-				dirEntrega = $("#sel-direccion-nv option:selected").text();
-			}
-
-			if(dirEntrega != ""){
-				var codCliente = $("#id-cliente-nv").val();
-			
-				var tipoPago = $("input[name=rdb-tipo-pago-nv]:checked").val();
-				var tipoVenta = $("input[name=rdb-tipo-venta-nv]:checked").val();
-
-				var dataCabeceraVenta = new Array();
-				dataCabeceraVenta.push({codCliente:codCliente, dirEntrega:dirEntrega, tipoPago:tipoPago, tipoVenta:tipoVenta});
-				
-				guardarNuevaVentaPhone(dataCabeceraVenta);
-			}
-			else{
-				Materialize.toast('Verificar dirección de entrega.', 3000);
-				return false;
-			}
-			
+			/*try{
+				//cordova.plugins.diagnostic.isGpsLocationAvailable( function(available){
+				//cordova.plugins.diagnostic.isLocationEnabled( function(available){
+				cordova.plugins.diagnostic.isGpsLocationEnabled( function(available){
+				    if(!available) {
+						alert("Por favor activar GPS");       
+				    }else{*/
+						navigator.geolocation.getCurrentPosition(geolocationOk,geolocationError,{ maximumAge: 10000, timeout: 30000, enableHighAccuracy: true });
+					/*}
+		       }, function(error){
+		       	alert("Error general, por favor reportar al administrador.");
+		       });
+			}catch(er){
+				alert( JSON.stringify(er));
+			} */
 		}
 		else{
 			Materialize.toast('No hay productos en la lista.', 3000);
@@ -749,28 +1184,194 @@ $(document).ready(function (){
 		}
 	});
 
-	function guardarNuevaVentaPhone(data)
+	function diagnosticOk()
 	{
-		var detalleV = arregloPedidosNV;
-		//limpiarFormularioNuevaVenta();
-		//GUARDAR CABECERA EN LA BD PHONE
-		//GUARDAR EL DETALLE EN LA BD PHONE 
-		//CAMBIAR ATENDIDO A "si" o "falla" o "no" --> DEPENDE SI GUARDA A LA BD SERVER
-		data[0].codVenta = "VE0001";
-		guardarNuevaVentaServer(data, detalleV);
+
 	}
 
-	function guardarNuevaVentaServer(data, detalleV)
+	function getLocation()//
 	{
-		//ENVIAR AL SERVIDOR DEL CLIENTE
-		//CAMBIAR ATENDIDO A "si" o "falla" o "no" --> DEPENDE SI GUARDA A LA BD SERVER
-		console.log(data)
-		console.log(detalleV)
+		var dataLocalizacion = {
+								fechaHora: app.getFechaHora(), 
+								longitude: "-12.122741666666665", 
+								latitude: "-77.02855833333334",
+								batery: 0.87, 
+								accuracy: 7.0000
+							};
+		return dataLocalizacion
+	}
 
-		cargarClientesRutaPhone() //vuelve a cargar la lista principal de clientes en ruta con sus estados
+	function geolocationError(error)
+	{
+		alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+	}
 
-		Materialize.toast('Venta exitosa.', 3000);
-		$.mobile.back(); //guarde o no guarde en el servidor debe regresar a la pantalla anterior***********
+	function geolocationOk(position)
+	{
+		var dataLocalizacion = {
+								fechaHora: app.getFechaHora(), 
+								longitude: position.coords.longitude, 
+								latitude: position.coords.latitude,
+								batery: app.battery.level, 
+								accuracy: position.coords.accuracy
+							};
+		previoGuardarNuevaVentaPhone(dataLocalizacion);
+	}
+
+	function previoGuardarNuevaVentaPhone(dataLocalizacion)
+	{
+		var dirEntrega = $("#inp-direccion-nv").val();
+		if(dirEntrega == "")
+		{
+			dirEntrega = $("#sel-direccion-nv option:selected").text();
+		}
+
+		if(dirEntrega != ""){
+			var codCliente = $("#id-cliente-nv").val();
+		
+			var tipoPago = $("input[name=rdb-tipo-pago-nv]:checked").val();
+			var tipoVenta = $("input[name=rdb-tipo-venta-nv]:checked").val();
+
+			var dataCabeceraVenta = {
+										//codigoVendedor: localStorage.getItem('usu_tp'),
+										//nombrevendedor: localStorage.getItem('nombre_tp'),
+										codCliente: codCliente, 
+										dirEntrega: dirEntrega, //por ahora no**
+										//clienteRuta: clienteRuta,//VARIABLE GLOBAL QUE INDICA SI EL CLIENTE ESTA EN RUTA.
+										tipoPago:tipoPago, //EFECTIVO, CREDITO
+										tipoVenta:tipoVenta, //BOLETA o FACTURA
+										igv: true //siempre va ser precio con IGV
+
+									};
+			//alert( JSON.stringify(dataLocalizacion) );
+			guardarNuevaVentaPhone(dataCabeceraVenta, dataLocalizacion);
+		}
+		else{
+			Materialize.toast('Verificar dirección de entrega.', 3000);
+			return false;
+		}
+	}
+
+	function guardarNuevaVentaPhone(dataC, dataL)
+	{
+		var detalleV = arregloPedidosNV; //para guardar el detalle de venta
+		guardarCabeceraVentaPhone(dataC, dataL, detalleV);//GUARDAR CABECERA EN LA BD PHONE
+		limpiarFormularioNuevaVenta();
+	}
+
+	function guardarCabeceraVentaPhone(dataC, dataL, detalleV)
+	{
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql("UPDATE cliente SET fechaUltimaVisita = '"+app.getFecha()+"' WHERE codCliente = '"+dataC.codCliente+"';", []); //ACTUALIZAR FECHA ULTIMA VISITA CLIENTE
+		    tx.executeSql('INSERT INTO cabeceraVenta (codCliente, dirEntrega, tipoPago, tipoVenta, igv, horaInicio, fechaHora, longitude, latitude, batery, accuracy) VALUES (?,?,?,?,?,?,?,?,?,?,?)', [dataC.codCliente, dataC.dirEntrega, dataC.tipoPago, dataC.tipoVenta, dataC.igv, localStorage.getItem('horaInicio_tp'), dataL.fechaHora, dataL.longitude, dataL.latitude, dataL.batery, dataL.accuracy]);
+         	tx.executeSql('SELECT * FROM cabeceraVenta ORDER BY codCabecera DESC LIMIT 1 ',[],function(tx,result){
+					fila=result.rows.item(0);
+					guardarDetalleVentaPhone(fila['codCabecera'], detalleV, dataC, dataL);//GUARDAR EL DETALLE EN LA BD PHONE  Y ACTUALIZAR EL TOTAL A PAGAR
+			});
+	  	}, function(error){
+	  		//alert("Error al guardar cabecera venta en el telefono.");
+	  		alert(error)
+	  	}, function() {});
+
+	}
+
+	function guardarDetalleVentaPhone(codCabecera, detalleV, dataC, dataL)
+	{
+		var totalPagar = 0;
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+		    for (var i = 0; i < detalleV.length; i++) 
+			{
+				var precio = detalleV[i].precio;
+				if(detalleV[i].precioN > 0 ){ precio = detalleV[i].precioN; }
+				tx.executeSql('INSERT INTO detalleVenta (codCabecera, codigoProd, precio, cantidad, importe) VALUES (?,?,?,?,?)', [codCabecera, detalleV[i].codigo, precio, detalleV[i].cantidad, detalleV[i].importe]);
+         		
+         		totalPagar += parseFloat(detalleV[i].importe);
+				totalPagar = parseFloat(totalPagar.toFixed(8));
+         	}
+         	tx.executeSql("UPDATE cabeceraVenta SET totalPagar = '"+formatNumber.new(totalPagar)+"' WHERE codCabecera = '"+codCabecera+"';", []); //ACTUALIZAR EL TOTAL A PAGAR
+
+         	//DATOS QUE SE ENVIARAN AL SERVER - ALTOMAYO
+         	var dataCServer= { //cabecera nueva
+								codigoVendedor: localStorage.getItem('usu_tp'),
+								nombreVendedor: localStorage.getItem('nombre_tp'),
+								codCliente: dataC.codCliente,
+								rutax: clienteRuta,//clienteRuta variable global
+								total: totalPagar,
+								horaInicio: localStorage.getItem('horaInicio_tp'),
+								fecha: app.getFechaHora()
+							};	
+							//arregloPedidosNV = codigo: codigo, nombre:nombre, precio: precio, precioN:0, cantidad:cantidad, importe:importe
+         	guardarNuevaVentaServer(codCabecera, dataCServer, dataL, detalleV);//guardarNuevaVentaServer(codCabecera, dataC, dataL, detalleV);
+	  	}, function(error){
+	  		alert("Error al almacenar detalle de venta."+ error);
+	  	}, function() {});
+	}
+
+	function guardarNuevaVentaServer(codCabecera, dataC, dataL, detalleV)//dataC, dataL, detalleV
+	{
+		try{
+			$.ajax({
+				url: webService+"GuardarNuevaVenta",
+				type: 'POST',
+				dataType: 'json',
+				data: {codigoVendedor:localStorage.getItem('usu_tp'), cabecera:JSON.stringify(dataC), localizacion:JSON.stringify(dataL), detalle:JSON.stringify(detalleV)}, //enviar los arreglos en string
+				beforeSend:function (){ 
+					abrirAlerta("Guardando venta en el servidor...");
+				},
+				success: function(dataR){
+					switch(dataR['respuesta']) {
+					    case "ok": // ok = sin problemas
+					        actualizarRespuestaVentaServer(codCabecera, dataC.codCliente, dataR['codVenta']);
+							Materialize.toast('La venta se ha guardado con éxito.', 3000);
+					        break;
+					    case "error": //existeVenta = el cliente ya a sido atendido ese día
+					    	actualizarRespuestaVentaServer(codCabecera, dataC.codCliente, null);//luego vemos que acción realizara esta opcion*****(eliminar venta phone, enviar correo, etc.)
+					    	alert("ocurrio un error al momento de guardar la venta en el servidor");
+					        break;
+					    default:
+					        break;
+					}
+				},
+				error: function(dataR){
+					actualizarRespuestaVentaServer(codCabecera, dataC.codCliente, null);
+					Materialize.toast('Error al enviar venta al servidor, por favor sincronizar luego.', 4000);
+					return false;
+			    }
+			});
+		}catch(er){
+			alert("Error NV00001. Problemas con el metodo guardarNuevaVentaServer().");
+			return false;
+		}
+	}
+
+	function actualizarRespuestaVentaServer(codCabecera, codCliente, codVenta)
+	{
+		//CAMBIAR ATENDIDO A "si" o "falla" o "no" --> DEPENDE SI GUARDA A LA BD SERVER****
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			if(codVenta != null)
+			{
+		    	tx.executeSql("UPDATE cabeceraVenta SET codigoServer ='"+codVenta+"' WHERE codCabecera = '"+codCabecera+"' ;", []);//agrega codigoVenta del servidor a la tabla detalleVenta del BDPhone
+		    	tx.executeSql("UPDATE cliente SET atendido = 'si' WHERE codCliente = '"+codCliente+"' ;", []);//actualizar atendido = "si", que indica que el cliente ha sido atendido con exito
+			}
+			else{
+				tx.executeSql("UPDATE cliente SET atendido = 'falla' WHERE codCliente = '"+codCliente+"' ;", []);//actualizar atendido = "falla", que indica que el cliente ha sido atendido pero no llego al servidor
+			}
+			cargarClientesRutaPhone() //vuelve a cargar la lista principal de clientes en ruta con sus estados
+			$.mobile.changePage("#home");
+			//$.mobile.back(); //guarde o no guarde en el servidor debe regresar a la pantalla anterior***********
+
+		}, function(error){
+		  	alert("Error al actualizar respuesta server. : "+ error);
+		}, function() {});
+
+		
 	}
 
 	$("body").on('click', '#cancelarFrmVenta', function(e){
@@ -790,22 +1391,138 @@ $(document).ready(function (){
 		$.mobile.changePage("#home");
 	});
 
+
+
 	$("body").on('click', '#logout', function(e){
-		//history.go(0)
-		$.mobile.changePage("#login");
+		if (confirm('Se eliminaran todos los registros del teléfono,¿Seguro que desea salir?')) {
+		    localStorage.setItem('primer_login', true);
+			localStorage.setItem('usu_tp', null);
+			//localStorage.clear(); //limpia toda la variable
+			$.mobile.changePage("#login");
+		}
 	});
 
 	$("body").on('click', '#aceptarSincronizar', function(e){
-		//history.go(0)
-		Materialize.toast('Sincronizado correctamente.', 3000)
-		$.mobile.back();
- 		return false;
+		var obj = {
+					vCliente: $("#chk-sinc-cliente").is(':checked'),
+					vProducto: $("#chk-sinc-producto").is(':checked')
+				  };
+		sincronizarDatosServer(obj);
 	});
 
+	function sincronizarDatosServer(obj)
+	{
+		if(obj.vCliente || obj.vProducto){
+			abrirAlerta("Sincronizando clientes...");
+			if(obj.vCliente)
+			{
+				sincronizarClienteServer();
+			}
+			else if(obj.vProducto)
+			{
+				sincronizarProductoServer();
+			}
+		}else{
+			Materialize.toast('Seleccione lo que desea sincronizar.', 3000);
+			return false;
+		}
+	}
+
+	function sincronizarClienteServer(obj)
+	{
+		try{
+			$.ajax({
+				url: webService+"sincronizarCliente",
+				type: 'POST',
+				dataType: 'json',
+				data: {codigoVendedor:localStorage.getItem('usu_tp') },
+				beforeSend:function (){
+					$("#mensaje-alerta").html("Sincronizando clientes...");
+				},
+				success: function(dataR){
+					if(dataR.length > 0){
+						sincronizarClientePhone(dataR);
+					}else{
+						Materialize.toast('No se encontraron cambios de clientes en el servidor.', 3000);
+					}
+					
+					if(obj.vProducto){
+						sincronizarProductoServer(obj);
+					}else{
+						cerrarAlerta();
+					}
+				},
+				error: function(e){
+					Materialize.toast('Error al conectarse con el servidor sincronizarClienteServer().', 3000);
+					cerrarAlerta();
+			    }
+			});
+		}catch(er){
+			alert("Error NV00001. Problemas con el metodo selectinformacionProductoCorteServer.");
+			return false;
+		}
+	}
+
+	function sincronizarClientePhone(data)
+	{
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			for (var i = 0; i < data.length; i++) {
+				//cliente (codCliente, razonSocial, ruc, clasificacion, giro, direccion_p, 
+				//contacto, celContacto, deuda REAL, fechaDeuda, despacho, fechaUltimaVisita, contactoUltimaVisita, atendido, ruta, tipo)
+				if(data[i].tipoR == "nuevo"){
+					tx.executeSql('INSERT INTO cliente VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [data[i].codCliente, data[i].razonSocial, data[i].ruc, data[i].clasificacion, data[i].giro, data[i].direccion_p, data[i].contacto, data[i].celContacto, data[i].deuda, data[i].fechaDeuda, data[i].despacho, data[i].fechaUltimaVisita, data[i].contactoUltimaVisita, data[i].atendido, data[i].ruta, data[i].tipo]);
+				}else if(data[i].tipoR == "editar"){
+					tx.executeSql("UPDATE cliente SET razonSocial = '"+data[i].razonSocial+"', ruc = '"+data[i].ruc+"', clasificacion= '"+data[i].clasificacion+"', giro= '"+data[i].giro+"', direccion_p= '"+data[i].direccion_p+"', contacto = '"+data[i].contacto+"', celContacto = '"+data[i].celContacto+"', deuda = '"+data[i].deuda+"', fechaDeuda = '"+data[i].fechaDeuda+"', despacho = '"+data[i].despacho+"', fechaUltimaVisita = '"+data[i].fechaUltimaVisita+"', contactoUltimaVisita = '"+data[i].contactoUltimaVisita+"', atendido = '"+data[i].atendido+"', ruta = '"+data[i].ruta+"', tipo = '"+data[i].tipo+"' WHERE codCliente = '"+data[i].codCliente+"' ;", []);
+				}else if(data[i].tipoR == "eliminar"){
+					tx.executeSql("DELETE FROM cliente WHERE codCliente = '"+data[i].codCliente+"';", []);
+				}
+			};
+			
+		}, function(error){
+		  	alert("Error al actualizar respuesta server actualizarRespuestaFallaVentaServer().");
+		}, function() {});
+	}
+
+	function sincronizarProductoServer(obj)
+	{
+		try{
+			$.ajax({
+				url: webService+"sincronizarProducto",
+				type: 'POST',
+				dataType: 'json',
+				data: { },
+				beforeSend:function (){
+					$("#mensaje-alerta").html("Sincronizando productos...");
+				},
+				success: function(dataR){
+					if(dataR.length > 0){
+						sincronizarProductoPhone(dataR);
+					}else{
+						Materialize.toast('No se encontraron cambios de productos en el servidor.', 3000);
+					}
+					
+					cerrarAlerta();
+				},
+				error: function(e){
+					Materialize.toast('Error al conectarse con el servidor sincronizarProductoServer().', 3000);
+					cerrarAlerta();
+			    }
+			});
+		}catch(er){
+			alert("Error NV00001. Problemas con el metodo selectinformacionProductoCorteServer.");
+			return false;
+		}
+	}
+
+	function sincronizarProductoPhone(data)
+	{
+
+	}
+
 	$("body").on('click', '#marca-asistencia', function(e){
-		//history.go(0)
-		Materialize.toast('Asistencia registrada.', 3000)
-		//$.mobile.back();
+		Materialize.toast('Asistencia registrada.', 3000);
  		return false;
 	});
 	
@@ -821,6 +1538,17 @@ $(document).ready(function (){
 			leyendaOk = true;
 		}
 		
+	});
+
+	function limpiarSearchClienteNoRuta()
+	{
+		$("#buscarAllCliente").val("");
+		$("#cont-clientes-todo").html("");
+	}
+
+	$("body").on('click', '#btnCancelarBusquedaCliente', function(e){
+		limpiarSearchClienteNoRuta();
+		$.mobile.back();
 	});
 
 
@@ -854,7 +1582,7 @@ $(document).ready(function (){
 			}
 		}
 		
-		if(existe)
+		if(existe == true)
 		{
 			var veriProd = false;
 			if(arregloPedidosNV.length > 0){
@@ -864,9 +1592,9 @@ $(document).ready(function (){
 			}
 			if(veriProd == false)
 			{
-				$("#codigo-producto-nv").val("")
-				informacionProductoAgregar(cod);
-				$('#modalAddProd').openModal();
+				$("#codigo-producto-nv").val("");
+				selectinformacionProducto(cod, "agregar", 0); //"agregar" = opcion que cumplira luego de el select
+				//$('#modalAddProd').openModal();
 			}
 			else{
 				$("#cant-lst-"+cod).focus();
@@ -879,56 +1607,112 @@ $(document).ready(function (){
 		}	
 	});
 
-	function selectinformacionProducto(cod)
+	function selectinformacionProducto(cod, opcion, cant) //cod = codigoProducto; opcion = que ara el metodo
 	{
-		/*SELECT PRODUCTO PHONE, FILTRO CODIGO*/var dataProducto = '[{"nombreProducto":"PRODUCTO 1", "precio":110.20, "precioCredito":120.20, "stock":34234, "undMedida":"Und", "corte":true}]';
-					dataProducto = JSON.parse( convertirJSONTemp(dataProducto) );
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM producto WHERE codigoProd=?',[cod],function(tx,result){
+				fila = result.rows.item(0);
+				selectinformacionProductoCorteServer(cod, opcion, cant, fila); //fila = datos del producto
+			});
+	  	}, function(error){
+	  		alert("Error al llamar datos de la BDPhone, selectinformacionProducto().")
+	  	}, function(){});
 
-		return dataProducto;
+		//return dataProducto;
+
+		/*CREATE TABLE IF NOT EXISTS producto (codigoProd, nombreProducto, precio, precioCredito REAL, stock integer, undMedida, corte)');
+			tx.executeSql('CREATE TABLE IF NOT EXISTS productoCorte (codigoCorte, codigoProd, precio REAL, corte integer)');*/
 	}
 
-	function selectinformacionProductoCorte(cod)
+	function selectinformacionProductoCorteServer(cod, opcion, cant, dataProducto)//cod = codigoProducto; opcion = que ara en el metodo
 	{
-		/*SELECT CORTE PHONE, FILTRO CODIGO*/var dataCorte = '[{"precio":110.20, "corte":1},'+
-							'{"precio":105.30, "corte":20}]';
-					dataCorte = JSON.parse( convertirJSONTemp(dataCorte) );
-		return dataCorte;
+		var ruc = $("#ruc-cliente-nv").val();
+		try{
+			$.ajax({
+				url: webService+"ListarPrecio",
+				type: 'POST',
+				dataType: 'json',
+				data: {Ruc:ruc, CodProd:cod},
+				beforeSend:function (){
+					abrirAlerta("Cargando stock de producto...");
+				},
+				success: function(dataR){
+					cerrarAlerta();
+					if(opcion == "agregar")
+					{
+						if(dataR[0].stock != null)
+						{ 
+							if(dataR[0].stock > 0)
+							{
+								$("#cant-prod-add").focus();
+								$('#modalAddProd').openModal();
+								informacionProductoAgregar(cod, dataProducto, dataR); //data = arreglo de cortes del producto
+							}
+							else{
+								alert("Producto NO cuenta con stock.");
+								return false;
+							}
+						}else{
+							alert("No se pudo obtener datos del producto.");
+							return false;
+						}
+					}
+					else if(opcion == "editar"){
+						//actualizarCantidadProductoListaNV(cod, dataProducto, dataR); //data = arreglo de cortes del producto
+						actualizarArregloPrecioProductoAdd(cod, dataProducto, dataR, cant);
+					}
+				},
+				error: function(e){
+					cerrarAlerta();
+					var corteOF = new Array();
+					corteOF.push({corte:1, Precio:dataProducto.precio, stock:10000});
+					Materialize.toast('Problemas de conexion, precio y stock referenciales.', 3000);
+					if(opcion == "agregar")
+					{
+						$("#cant-prod-add").focus();
+						$('#modalAddProd').openModal();
+						informacionProductoAgregar(cod, dataProducto, corteOF);
+					}
+					else if(opcion == "editar"){
+						actualizarArregloPrecioProductoAdd(cod, dataProducto, corteOF, cant);
+						//return false;
+					}
+			    }
+			});
+		}catch(er){
+			alert("Error NV00001. Problemas con el metodo selectinformacionProductoCorteServer.");
+			return false;
+		}
 	}
 
-	function informacionProductoAgregar(cod)
+	function informacionProductoAgregar(cod, dataProducto, dataCorte) //cod = codigoProducto
 	{
 		limpiarAgregarProducto();
-		/*SELECT PRODUCTO PHONE, FILTRO CODIGO var dataProducto = '[{"nombreProducto":"PRODUCTO 1", "precio":110.20, "precioCredito":120.20, "stock":34234, "undMedida":"Und", "corte":true}]';
-					dataProducto = JSON.parse( convertirJSONTemp(dataProducto) );*/
 
-		/*SELECT CORTE PHONE, FILTRO CODIGO var dataCorte = '[{"precio":110.20, "corte":1},'+
-							'{"precio":105.30, "corte":20}]';
-					dataCorte = JSON.parse( convertirJSONTemp(dataCorte) );*/
-		var dataProducto = selectinformacionProducto(cod);
-		var dataCorte = selectinformacionProductoCorte(cod);
-
-		$("#nombre-prod-add").html(dataProducto[0].nombreProducto);
+		$("#nombre-prod-add").html(dataProducto.nombreProducto);
 		$("#cod-prod-add").val(cod);
-		$("#stock-prod").val(dataProducto[0].stock);
-		$("#unidad-prod").val(dataProducto[0].undMedida)
+		if(dataCorte[0].stock != null){ $("#stock-prod").val(dataCorte[0].stock); }else{ $("#stock-prod").val(dataProducto.stock);}//stock prioritario servidor, luego phone
 
-		if(dataProducto[0].corte == false)
+		$("#unidad-prod").val(dataProducto.undMedida);
+
+		if(dataProducto.corte == false || dataProducto.corte == "false")
 		{
-			arregloPrecioProductoAdd.push({corte:dataProducto[0].corte, precio:dataProducto[0].precio, precioCredito:dataProducto[0].precioCredito});
-			var str = '<div class="info-item-pre"><span>Fijo</span><span class="precio-gen">'+dataProducto[0].precio+'</span></div>'+
-					  '<div class="info-item-pre"><span>Credito</span><span class="precio-gen">'+dataProducto[0].precioCredito+'</span></div>';
+			arregloPrecioProductoAdd.push({corte:dataProducto.corte, precio:dataProducto.precio, precioCredito:dataProducto.precioCredito});
+			var str = '<div class="info-item-pre"><span>Fijo</span><span class="precio-gen">'+dataProducto.precio+'</span></div>'+
+					  '<div class="info-item-pre"><span>Credito</span><span class="precio-gen">'+dataProducto.precioCredito+'</span></div>';
 			$("#cont-info-precio").append(str);
 		}
 		else{
-			
 			var str = "";
 			for (var i = 0; i < dataCorte.length; i++) 
 			{
-				arregloPrecioProductoAdd.push({corte:dataProducto[0].corte, precio:dataCorte[i].precio, ncorte:dataCorte[i].corte});
+				arregloPrecioProductoAdd.push({corte:dataProducto.corte, precio:dataCorte[i].Precio, ncorte:dataCorte[i].corte});
 
 				str += '<div class="info-item-pre"><span>'+dataCorte[i].corte+' a '; 
 				if( dataCorte[i+1] != undefined ){ str += dataCorte[i+1].corte-1 }else{ str += " más"}
-				str += '</span><span class="precio-gen">'+dataCorte[i].precio+'</span></div>';
+				str += '</span><span class="precio-gen">'+dataCorte[i].Precio+'</span></div>';
 			}
 			$("#cont-info-precio").append(str);
 		}
@@ -941,7 +1725,7 @@ $(document).ready(function (){
 		$("#unidad-prod").val("");
 		$("#cant-prod-add").val("");
 		$("#importe-prod").val("");
-		$("#cod-prod-add").val(0)
+		$("#cod-prod-add").val(0);
 		$("#precio-prod-add").val(0);
 		$("#cont-info-precio").html("");
 		//$("#precio-prod-imp-lst").html("0");
@@ -961,7 +1745,7 @@ $(document).ready(function (){
 		var importe = 0;
 		if (arregloPrecioProductoAdd.length > 0) 
 		{
-			if(arregloPrecioProductoAdd[0].corte == true)
+			if(arregloPrecioProductoAdd[0].corte == true || arregloPrecioProductoAdd[0].corte == "true")
 			{
 				importe = parseFloat( ( arregloPrecioProductoAdd[0].precio * cantidad ).toFixed(8));
 				for (var i = 0; i < arregloPrecioProductoAdd.length; i++) 
@@ -999,10 +1783,17 @@ $(document).ready(function (){
 		var importe = parseFloat($("#importe-prod").val());
 			importe = parseFloat(importe.toFixed(8));
 		
-		if (cantidad > 0)
+		if(cantidad > 0)
 		{
-			agregarItemListaPedido(codigo, nombre, precio, cantidad, importe);
-			$("#modalAddProd").closeModal();
+			var stockV = $("#stock-prod").val();
+			if (cantidad <= stockV ) {
+				agregarItemListaPedido(codigo, nombre, precio, cantidad, importe);
+				$("#modalAddProd").closeModal();
+			}else{
+				$("#cant-prod-add").focus();
+				Materialize.toast('La cantidad supera el stock, verificar.', 3000);
+				return false;
+			}
 		}else{
 			$("#cant-prod-add").focus();
 			Materialize.toast('Debe ingresar una cantidad.', 3000);
@@ -1098,6 +1889,7 @@ $(document).ready(function (){
 		}
 	}
 
+	var mProd = false;
 	$("body").on('keyup', '.text-cant-itm-nv', function(){
 		var str = $(this).attr("id");
 		str = str.split("-");
@@ -1105,7 +1897,13 @@ $(document).ready(function (){
 		var cant = parseInt($(this).val());
 		if(cant > 0)
 		{
-			actualizarCantidadProductoListaNV(id, cant);
+			if(mProd == false){
+				mProd = true;
+				selectinformacionProducto(id, "editar", cant);//opcion = indica la accion dentro de la funcion; "editar" -> llama a actualizarCantidadProductoListaNV
+			}else{
+				actualizarCantidadProductoListaNV(id, cant);
+			}
+			
 		}
 	});
 
@@ -1115,26 +1913,31 @@ $(document).ready(function (){
 		{
 			Materialize.toast('Ingrese una cantidad correcta.', 3000);
 			$(this).focus();
-		} 
+		}else{
+			mProd = false;
+		}
 	});
 
-	function actualizarCantidadProductoListaNV(id, cant)
+	function actualizarArregloPrecioProductoAdd(id, dataProducto, dataCorte, cant)
 	{
 		arregloPrecioProductoAdd = [];
 
-		var dataProducto = selectinformacionProducto(id);
-		if(dataProducto[0].corte == false)
+		if(dataProducto.corte == false || dataProducto.corte == "false")
 		{
-			arregloPrecioProductoAdd.push({corte:dataProducto[0].corte, precio:dataProducto[0].precio, precioCredito:dataProducto[0].precioCredito});
+			arregloPrecioProductoAdd.push({corte:dataProducto.corte, precio:dataProducto.precio, precioCredito:dataProducto.precioCredito});
 		}
 		else{
-			var dataCorte = selectinformacionProductoCorte(id);
 			for (var i = 0; i < dataCorte.length; i++) 
 			{
-				arregloPrecioProductoAdd.push({corte:dataProducto[0].corte, precio:dataCorte[i].precio, ncorte:dataCorte[i].corte});
+				arregloPrecioProductoAdd.push({corte:dataProducto.corte, precio:dataCorte[i].Precio, ncorte:dataCorte[i].corte});
 			}
 		}
 
+		actualizarCantidadProductoListaNV(id, cant);
+	}
+
+	function actualizarCantidadProductoListaNV(id, cant)
+	{
 		var total = 0.00;
 		for (var i = 0; i < arregloPedidosNV.length; i++) 
 		{
@@ -1162,10 +1965,207 @@ $(document).ready(function (){
     			total = parseFloat(total.toFixed(8));
 			}
 		}
-
 		$("#precio-prod-imp-lst").html(formatNumber.new(total, "S/ "));
+	}
+
+	/*botones de menu opciones*/
+
+	var fallasVenta = false;
+	var ventaFallaCab = new Array();
+	var ventaFallaDet = new Array();
+
+	$("body").on('click', '#btnSincronizarVenta', function(e){
+		if(fallasVenta == true)
+		{
+			sincronizarVentaFallaPhone();
+		}else{
+			Materialize.toast('No existen ventas con fallas.', 3000);
+		}
+	});
+
+	function sincronizarVentaFallaPhone()
+	{
+		try{
+			if(ventaFallaCab.length > 0)
+			{
+				for(var i = 0; i < ventaFallaCab.length; i++) 
+				{
+					if (ventaFallaCab[i].codigoServer == null)
+					{
+						var dataCab = { 
+										codigoVendedor: localStorage.getItem('usu_tp'),
+										nombreVendedor: localStorage.getItem('nombre_tp'),
+										codCliente: ventaFallaCab[i].codCliente,
+										rutax: clienteRuta,
+										total: ventaFallaCab[i].totalPagar,
+										horaInicio: ventaFallaCab[i].horaInicio,
+										fecha: ventaFallaCab[i].fechaHora
+									 };
+						var dataDet = new Array();
+
+						for (var j = 0; j < ventaFallaDet.length; j++) 
+						{
+							if(ventaFallaCab[i].codCabecera == ventaFallaDet[j].codCabecera) 
+							{
+								dataDet.push({codigo: ventaFallaDet[j].codigoProd, nombre:"", precio: ventaFallaDet[j].precio, precioN:0, cantidad:ventaFallaDet[j].cantidad, importe:ventaFallaDet[j].importe});
+								
+							}
+						}
+
+						//fechaHora, longitude, latitude, batery, accuracy
+						var dataLocalizacion = {
+								fechaHora: ventaFallaCab[i].fechaHora, 
+								longitude: ventaFallaCab[i].longitude, 
+								latitude: ventaFallaCab[i].latitude,
+								batery: ventaFallaCab[i].batery, 
+								accuracy: ventaFallaCab[i].accuracy
+							};
+
+						guardarFallaVentaServer(ventaFallaCab[i].codCabecera, dataCab, dataLocalizacion, dataDet)
+					}
+				}
+			}
+		}catch(er)
+		{
+			alert(er);
+		}
+	}
+
+	function guardarFallaVentaServer(codCabecera, dataC, dataL, detalleV)
+	{
+		try{
+			$.ajax({
+				url: webService+"GuardarNuevaVenta",
+				type: 'POST',
+				dataType: 'json',
+				data: {codigoVendedor:localStorage.getItem('usu_tp'), cabecera:JSON.stringify(dataC), localizacion:JSON.stringify(dataL), detalle:JSON.stringify(detalleV)},
+				beforeSend:function (){
+					abrirAlerta("Sincronizando ventas...");
+				},
+				success: function(dataR){
+					cerrarAlerta();
+					actualizarRespuestaFallaVentaServer(codCabecera, dataC, dataR['codVenta']);
+				},
+				error: function(dataR){
+					cerrarAlerta();
+					Materialize.toast('Error FV0001. Problemas de conexion con el servidor.', 5000); // FV0001, problemas al comunicarse con el servidor, (internet o ruta)
+					actualizarRespuestaFallaVentaServer(codCabecera, dataC, null);
+					return false;
+			    }
+			});
+		}catch(er){
+			alert("Error NV00001. Problemas con el metodo guardarFallaVentaServer().");
+			return false;
+		}
+	}
+
+
+	function actualizarRespuestaFallaVentaServer(codCabecera, dataC, codVenta)
+	{
+		var codCliente = dataC['codCliente'];
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			if(codVenta != null)
+			{
+		    	tx.executeSql("UPDATE cabeceraVenta SET codigoServer ='"+codVenta+"' WHERE codCabecera = '"+codCabecera+"' ;", []);
+		    	tx.executeSql("UPDATE cliente SET atendido = 'si' WHERE codCliente = '"+codCliente+"' ;", []);//tx.executeSql("UPDATE cliente SET atendido = 'si', despacho = '"+true+"' WHERE codCliente = '"+codCliente+"' ;", []);
+			}else{
+				tx.executeSql("UPDATE cliente SET atendido = 'falla' WHERE codCliente = '"+codCliente+"' ;", []);
+			}
+			cargarAllCabeceraVentaDiaPhone();
+			cargarClientesRutaPhone();
+		}, function(error){
+		  	alert("Error al actualizar respuesta server actualizarRespuestaFallaVentaServer().");
+		}, function() {});
+	}
+
+	$("body").on('click', '#btnVentasDia', function(e){
+		cargarVentasDiaPhone();
+	});
+
+	function cargarVentasDiaPhone()
+	{
+		try{
+			cargarAllCabeceraVentaDiaPhone();
+			$.mobile.changePage("#ventasDia");
+		}
+		catch(er){
+			alert("error: "+er)
+		}
 		
 	}
+
+	function cargarAllCabeceraVentaDiaPhone()
+	{
+		fallasVenta = false;// AL INICIO ASUME QUE NO HAY FALLAS
+		ventaFallaCab = [];
+		var data = new Array();
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			//fechaHora
+			//localStorage.getItem('fecha_cartera') != app.getFecha()
+			tx.executeSql("SELECT * FROM cabeceraVenta",[],function(tx,result){
+				if(result.rows.length > 0){
+					for(var i=0; i<result.rows.length; i++){
+			       		data.push( result.rows.item(i) );
+			       		if(result.rows.item(i)['codigoServer'] == null){ fallasVenta = true; }//SI EXISTEN FALLAS CAMBIA A TRUE
+			    	}
+			    	ventaFallaCab = data; //arreglo cabecera ventas para sincronizar fallas
+			    	cargarAllDetalleVentaDiaPhone(data); //data = dataCabecera
+				}else{
+					Materialize.toast('No se encontraron ventas.', 5000);
+				}
+			});
+	  	}, function(error){
+	  		alert("Error al cargar datos de ventas, cabecera.");
+	  	}, function(){});
+	}
+
+	function cargarAllDetalleVentaDiaPhone(dataCabecera)
+	{
+		ventaFallaDet = [];
+		var data = new Array();
+		$.support.cors = true;
+		var db = window.sqlitePlugin.openDatabase({name: 'tpedido.db', location: 'default'});
+		db.transaction(function(tx) {
+			tx.executeSql("SELECT * FROM detalleVenta",[],function(tx,result){
+				if(result.rows.length > 0){
+					for(var i=0; i<result.rows.length; i++){
+			       		data.push( result.rows.item(i) );
+			    	}
+				}
+				ventaFallaDet = data;
+				crearItemsVentaDia(dataCabecera, data); // data = dataDetalle
+			});
+	  	}, function(error){
+	  		alert("Error al cargar datos de ventas, detalle.");
+	  	}, function(){});
+	}
+
+	function crearItemsVentaDia(dataCabecera, dataDetalle)
+	{
+		$("#ventasDiaCont").html("");
+		var str = "";
+		for (var i = 0; i < dataCabecera.length; i++) 
+		{
+			str = '<li><div class="collapsible-header"><span>';
+			str += dataCabecera[i]['codCliente']+'</span><span class="precio-vd">S/ '+dataCabecera[i]['totalPagar']+'</span> <i class="material-icons"';
+			if(dataCabecera[i]['codigoServer'] != null){str += ' >done';}else{str += ' style="color: #FF5252;">warning';}
+			str += '</i></div><div class="collapsible-body bgGray"><div class="contenedor-demp contenedor-demp-vd">';
+			for (var j = 0; j < dataDetalle.length; j++) {
+				if(dataCabecera[i]['codCabecera'] == dataDetalle[j]['codCabecera'])
+				{
+					str += '<div><span>-</span>'+dataDetalle[j]['codigoProd']+' ('+dataDetalle[j]['cantidad']+')</div>';
+				}
+			}
+			str += '</div></div></li>';
+			$("#ventasDiaCont").append(str);
+		}
+	}
+
+	/*fin botones de menu opciones*/
 
 	$("body").on('change', '#opcion-cliente', function(e){
 		var a = $(this).val();
@@ -1174,7 +2174,8 @@ $(document).ready(function (){
 		        $.mobile.changePage("#FormNuevoCliente");
 		        break;
 		    case "2":
-		    	cargarArregloClientes();
+		    	limpiarSearchClienteNoRuta();
+		    	//cargarArregloClientes();
 		        $.mobile.changePage("#clienteNoRuta");
 		        break;
 		    default:
@@ -1209,12 +2210,12 @@ $(document).ready(function (){
 	$("body").on('change', '.rdb-tipo-nc-doc', function(e){
 		//$("#radio_1").prop("checked", true) 
 		var tipo = $(this).val();
-		if( tipo == 'ruc')
+		/*if( tipo == 'ruc')
 		{
 			$(".depen-dni").show(200);
 		}else if( tipo == 'dni'){
 			$(".depen-dni").hide(200);
-		}
+		}*/
 	});
 	
 });
