@@ -113,7 +113,7 @@ $(document).ready(function (){
 		try{
 			$.ajax({
 				url: webService+"Login",
-				type: 'POST',
+				type: 'GET',
 				dataType: 'json',
 				data: {user: data.usuario, password:data.clave},
 				beforeSend:function (){ 
@@ -144,7 +144,7 @@ $(document).ready(function (){
 				error: function(dataR){
 					cerrarAlerta();
 					if( localStorage.getItem('primer_login') == true || localStorage.getItem('primer_login') == "true"){
-						alert( "ERROR LOGIN: " + JSON.stringify( dataR ));
+						alert( JSON.stringify( dataR ));
 						//Materialize.toast('Error L00002. Problemas de conexion con el servidor login().', 5000);
 						return false;
 					}else{
