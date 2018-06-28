@@ -25,7 +25,7 @@
   <plugin name="cordova-plugin-splashscreen" source="npm" spec="~3.2.1"/>
   <plugin name="cordova-plugin-statusbar" source="npm" spec="~2.1.2"/>
   <plugin name="cordova-plugin-vibration" source="npm" spec="~2.1.0"/>
-  <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1"/>
+  <plugin name="cordova-plugin-whitelist" source="npm"/>
   <plugin name="cordova.plugins.diagnostic" source="npm" />
   <!--<plugin name="cordova.plugins.diagnostic" spec="~3.5.0" />-->
   <!--<gap:plugin name="cordova.plugins.diagnostic.api-22" source="npm" />-->
