@@ -12,8 +12,7 @@
 
 $(document).ready(function (){
 
-	//var webService = "http://168.121.51.114:81/AMWEB/Service1.asmx/"; //WS ALTOMAYO
-	var webService = "http://tomapedidos.avanza.pe/wsroinet/"; //WS ROINET
+	var webService = "http://168.121.238.14:81/AMWEB/Service1.asmx/";
 
 	var arregloRuta = new Array(); //arreglo para busqueda de empresas de ruta
 	var arregloTodoclientes = new Array(); //arreglo para busqueda clientes asignados al vendedor
