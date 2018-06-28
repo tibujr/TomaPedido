@@ -1,9 +1,11 @@
 /* fallback */
-@font-face {
+
+/*@font-face {
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
   src: local('Material Icons'), local('MaterialIcons-Regular'), url(fonts/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2) format('woff2');
+  //src: local('Material Icons'), local('MaterialIcons-Regular'), url(fonts/MaterialIcons-Regular.woff2) format('woff2');
 }
 
 .material-icons {
@@ -20,13 +22,48 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
-}
+}*/
 
 li, a{
     text-shadow: none;
 }
 
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+       local('MaterialIcons-Regular'),
+       url(fonts/MaterialIcons-Regular.woff2) format('woff2'),
+       url(fonts/MaterialIcons-Regular.woff) format('woff'),
+       url(fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
 /*INICIO*/
+
+#modalMensaje{
+  text-align: center;
+  padding: 20% 0;
+}
 
 .cont-info-nom{
     margin-bottom: 0 !important;
@@ -371,11 +408,11 @@ td.precio-select-dv span {
     vertical-align: middle;
 }
 
-.pagoCredito{
+.pagoContado{
   background: #FF5252;
 }
 
-.pagoContado{
+.pagoCredito{
   background: #8BC34A;
 }
 
@@ -610,6 +647,19 @@ span.promo-texto {
 }
 
 /* FIN PRODUCTO*/
+
+/* SINCRONIZAR */
+
+.alerta-sincronizar{
+  background: yellow;
+  color: #c76969;
+  font-size: 11px;
+  display: inline-block;
+  width: 100%;
+  padding: 2%;
+}
+
+/* FIN SINCRONIZAR */
 
 /*MATERIALIZE*/
 
