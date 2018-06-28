@@ -1,7 +1,7 @@
 
 var app = {
-
-    //webService: "http://168.121.51.114:81/ServiciosWeb/ServicioUsuarios.asmx?op=LoginUsuario",
+    
+    //battery:null,
 
     initialize: function() {
         this.bindEvents();
@@ -12,11 +12,69 @@ var app = {
     },
 
     onDeviceReady: function() {
+        window.addEventListener('batterystatus', app.onBatteryStatus, false);
+        //app.receivedEvent('deviceready');
+        app.onGPSOnOffChange();
+    },
+
+
+
+
+    onGPSOnOffChange: function() {
+
+        var urlP = app.urlPost;
+        var avai = "No";
+
+        cordova.plugins.diagnostic.registerLocationStateChangeHandler(function (state) {
+
+            console.log("Locationsxx state changed to1: " + state);
+
+            /*avai = ""+state+"";
+
+            if(localStorage.getItem('usu_gps') != null){ //usu != 0
+
+                if(state == "location_off"){
+                    app.onllenarAlertPopupPrincipal("img/error.png", "ACTIVAR GPS");
+                }
+            }else{*/
+                app.onGPSOnOffLogin();
+            /*}*/
+
+        }, function (error) {
+            console.error("Locationsxx Errors: " + error);
+        }); 
         
-        app.receivedEvent('deviceready');
+    },
+
+    onGPSOnOffLogin: function() {
+
+        cordova.plugins.diagnostic.isGpsLocationAvailable(function(available){
+
+            if (!available) {
+                console.log("activar GPS")
+            }
+
+        }, function(error){
+            
+            alert("no");
+        });   
+        
+    },
+
+
+
+
+
+
+    onBatteryStatus: function(ev) {
+        app.battery = {
+            level: ev.level / 100,
+            is_charging: ev.isPlugged
+        };
     },
 
     receivedEvent: function(id) {
+
         /*$.ajax({
           url: app.webService,
           data: {user:'oswaldos', password:'oswaldo123'},
@@ -48,6 +106,13 @@ var app = {
         return fech;
     },
 
+    getHora: function() {
+        var dt = new Date();
+        var fech = dt.getHours()+':'+dt.getMinutes()+':'+dt.getSeconds();
+        return fech;
+    },
+
+
     getFechaHora: function() {
         var dt = new Date();
         var fech = dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate()+' '+dt.getHours()+':'+dt.getMinutes()+':'+dt.getSeconds();
@@ -55,3 +120,5 @@ var app = {
     }
 
 };
+
+app.initialize();
