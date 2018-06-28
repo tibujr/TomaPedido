@@ -6,6 +6,7 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <meta name="viewport" content="user-scalable=no, maximum-scale=1, minimum-scale=1, user-scalable=no, initial-scale=1, width=device-width, height=device-height" />
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src: 'self' 'unsafe-inline' 'unsafe-eval'">
     <!--<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />-->
 
     <!--CSS-->
@@ -37,15 +38,63 @@
                 <div class="col s12"> 
                     <!--<form id="formularioLogin" >-->
                         <label> Usuario </label>
-                        <input type="text" id="usuario" name="usuario" value="184">
+                        <input type="text" id="usuario" name="usuario" value="">
                         <label> Password </label>
-                        <input type="password" id="clave" name="clave" value="1111">
+                        <input type="password" id="clave" name="clave" value="">
                         <div id="aceptarLogin" class="col s12 waves-effect waves-light btn-large">INGRESAR</div>
                     <!--</form> -->
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- MODAL NO ACTUAR -->
+    <div id="modalNoActuar" class="modal">
+        <div class="modal-content">
+            <span class="cab-pop-sel-dv">¿Qué sucedió?</span>
+            <div class="cuerpo-pop-sel-dv" style="padding-top: 25px;">
+                <div class="input-field col s12">
+                    <select id="accion-no-actuar">
+                        <option value="1">Venta</option>
+                        <option value="2">Despacho</option>
+                        <option value="3">Cobranza</option>
+                    </select>
+                    <label>¿Qué escenario?</label>
+                </div>
+                <div class="input-field col s12" id="select-comentarios-no-actuar">
+                    <select id="sel-comentarios-no-actuar">
+                        <option value="1">COMENTARIO 1</option>
+                        <option value="2">COMENTARIO 2</option>
+                    </select>
+                    <label>Comentario</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-green btn-flat">ACEPTAR</a>
+            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat">CANCELAR</a>
+        </div>
+    </div>
+
+    <div id="modalMensaje" class="modal">
+        <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-content">
+            <div id="mensaje-alerta">cargando clientes..</div>
+        </div>
+    </div>
+     <!-- FIN MODAL NO ACTUAR -->
 
     <div data-role="page" id="home">
         <div data-role="header" class="dark-primary-color">
@@ -64,12 +113,12 @@
                             </div>
                         </li>
                         <li><a href="javascript:void(0)" id="marca-asistencia" class="waves-effect"><i class="material-icons">spellcheck</i>Asistencia</a></li>
-                        <li><a href="#ventasDia" class="waves-effect"><i class="material-icons">work</i>Ventas del día</a></li>
+                        <li><a href="javascript:void(0)" id="btnVentasDia" class="waves-effect"><i class="material-icons">work</i>Ventas del día</a></li>
                         <li><div class="divider"></div></li>
                         <li><a class="subheader">SISTEMA</a></li>
-                        <li><a href="#sistemaSincronizar" class="waves-effect"><i class="material-icons">settings_backup_restore</i>Sincronizar</a></li>
+                        <li><a href="#sistemaSincronizar" class="waves-effect"><i class="material-icons">restore</i>Sincronizar</a></li>
                         <li><div class="divider"></div></li>
-                        <li><a href="javascript:void(0)" id="logout" class="waves-effect"><i class="material-icons">power_settings_new</i>Salir</a></li>
+                        <li><a href="javascript:void(0)" id="logout" class="waves-effect"><i class="material-icons">lock_outline</i>Salir</a></li>
                     </ul>
                 
                     <a href="#" data-activates="slide-out" class="button-collapse" style="color: #ffffff;"><i class="material-icons">menu</i></a>
@@ -89,7 +138,7 @@
                     <div class="input-field col s12">
                         <select id="opcion-cliente">
                           <option value="0" selected>OPCIONES</option>
-                          <option value="2">CLIENTE NO RUTA</option>
+                          <option value="2">CLIENTE FUERA DE RUTA</option>
                           <option value="1">NUEVO CLIENTE</option>
                         </select>
                     </div>
@@ -125,42 +174,16 @@
                     <div class="col s12" style="margin-top: 0;"> 
                            <ul id="cont-clientes-ruta" class="collapsible cont-emp-inicio" data-collapsible="accordion"><!--lista de clientes--></ul>
                     </div>
-                    <!-- MODAL NO ACTUAR -->
-                    <div id="modalNoActuar" class="modal">
-                        <div class="modal-content">
-                            <span class="cab-pop-sel-dv">¿Qué sucedió?</span>
-                            <div class="cuerpo-pop-sel-dv" style="padding-top: 25px;">
-                                <div class="input-field col s12">
-                                    <select id="accion-no-actuar">
-                                        <option value="1">Venta</option>
-                                        <option value="2">Despacho</option>
-                                        <option value="3">Cobranza</option>
-                                    </select>
-                                    <label>¿Qué escenario?</label>
-                                </div>
-                                <div class="input-field col s12" id="select-comentarios-no-actuar">
-                                    <select id="sel-comentarios-no-actuar">
-                                        <option value="1">COMENTARIO 1</option>
-                                        <option value="2">COMENTARIO 2</option>
-                                    </select>
-                                    <label>Comentario</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat">CANCELAR</a>
-                            <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-green btn-flat">ACEPTAR</a>
-                        </div>
-                    </div>
-                     <!-- FIN MODAL NO ACTUAR -->
+                    
                 </div>
-                <div id="promociones" class="col s12">
-                    <div class="col s12" style="font-size: 0;">
+                <div id="promociones" class="col s12"> 
+                    <div>No disponible</div>
+                    <!--<div class="col s12" style="font-size: 0;">
                         <div class="item-promo">
                             <div class="promo-izq">
                                 <div class="nombre-prod-promo">Arroz Margarita</div>
                                 <div>
-                                    <div class="label-titulo">Valido hasta</div>
+                                    <div class="label-titulo">Válido hasta</div>
                                     <div class="label-titulo fecha-prod-promo" >18/10/2016</div>
                                 </div>
                             </div>
@@ -173,7 +196,7 @@
                             <div class="promo-izq">
                                 <div class="nombre-prod-promo">Arroz Margarita</div>
                                 <div>
-                                    <div class="label-titulo">Valido hasta</div>
+                                    <div class="label-titulo">Válido hasta</div>
                                     <div class="label-titulo fecha-prod-promo" >18/09/2016</div>
                                 </div>
                             </div>
@@ -186,7 +209,7 @@
                             <div class="promo-izq">
                                 <div class="nombre-prod-promo">Arroz Margarita</div>
                                 <div>
-                                    <div class="label-titulo">Valido hasta</div>
+                                    <div class="label-titulo">Válido hasta</div>
                                     <div class="label-titulo fecha-prod-promo" >02/10/2016</div>
                                 </div>
                             </div>
@@ -195,7 +218,7 @@
                                 <div class="promo-det"><div class="label-titulo">GANA</div><span class="promo-texto">5% de descuento</span></div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>
@@ -210,14 +233,16 @@
                 <div class="col s12"> 
                     
                     <div class="col s12" >
+                        <div class="cont-vdes" style="overflow: hidden;"><span class="alerta-sincronizar"><!--* Procura sincronizar pronto tus pedidos y evita problemas de stock.-->Pedido sujeto a validación para su ingreso.</span></div>
                         <div class="cont-vdes">
                             <div class="cabecera-vdes">Ventas del día</div>
                             <div class="cuerpo-vdes cuerpo-vdes3 cuerpo-vdes-vd" style="padding: 0;">
                                 
-                                <ul class="collapsible itm-fac-pagar" data-collapsible="accordion">
-                                    <li>
+                                <ul id="ventasDiaCont" class="collapsible itm-fac-pagar" data-collapsible="accordion">
+                                    <!--<li>
                                         <div class="collapsible-header">
-                                           <span>VEN83293KD23D</span><span class="precio-vd">S/200000</span> <i class="material-icons">done</i>
+                                           <span>
+                                           </span><span class="precio-vd">S/200000</span> <i class="material-icons">done</i>
                                         </div>
                                         <div class="collapsible-body bgGray">
                                             <div class="contenedor-demp contenedor-demp-vd">
@@ -229,47 +254,18 @@
                                                 <div><span>-</span>Producto 6</div>
                                             </div>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div class="collapsible-header">
-                                           <span>VEN83293KD24D</span><span class="precio-vd">S/300000</span> <i class="material-icons" style="color: #FF5252;">warning</i>
-                                        </div>
-                                        <div class="collapsible-body bgGray">
-                                            <div class="contenedor-demp contenedor-demp-vd">
-                                                <div><span>-</span>Producto 1</div>
-                                                <div><span>-</span>Producto 2</div>
-                                                <div><span>-</span>Producto 3</div>
-                                                <div><span>-</span>Producto 4</div>
-                                                <div><span>-</span>Producto 5</div>
-                                                <div><span>-</span>Producto 6</div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="collapsible-header">
-                                            <span>VEN83293KD25D</span><span class="precio-vd">S/400000</span> <i class="material-icons">done</i> 
-                                        </div>
-                                        <div class="collapsible-body bgGray">
-                                            <div class="contenedor-demp contenedor-demp-vd">
-                                                <div><span>-</span>Producto 1</div>
-                                                <div><span>-</span>Producto 2</div>
-                                                <div><span>-</span>Producto 3</div>
-                                                <div><span>-</span>Producto 4</div>
-                                                <div><span>-</span>Producto 5</div>
-                                                <div><span>-</span>Producto 6</div>
-                                            </div>
-                                        </div>
-                                    </li>
+                                    </li>-->
                                 </ul>
 
                             </div>
+                            <!--para prueba--><div id="logSin"></div>
                         </div>
                     </div>
                     <div class="col s6"> 
-                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">SINCRONIZAR</a>
+                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">ATRAS</a>
                     </div>
                     <div class="col s6"> 
-                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">ATRAS</a>
+                        <a href="javascript:void(0)" id="btnSincronizarVenta" class="col s12 waves-effect waves-light btn-large">SINCRONIZAR</a>
                     </div>
                 </div>
             </div>
@@ -291,31 +287,31 @@
                                 <ul>
                                     <li>
                                         <p>
-                                          <input type="checkbox" class="filled-in" id="sinc-dv-cod-n1" checked="checked" />
-                                          <label for="sinc-dv-cod-n1">Productos </label>
+                                          <input type="checkbox" class="filled-in" id="chk-sinc-cliente" />
+                                          <label for="chk-sinc-cliente">Clientes</label>
                                         </p>
                                     </li>
                                     <li>
                                         <p>
-                                          <input type="checkbox" class="filled-in" id="sinc-dv-cod-n2" checked="checked" />
-                                          <label for="sinc-dv-cod-n2">Clientes</label>
+                                          <input type="checkbox" class="filled-in" id="chk-sinc-producto" />
+                                          <label for="chk-sinc-producto">Productos</label>
                                         </p>
                                     </li>
-                                    <li>
+                                    <!--<li>
                                         <p>
                                           <input type="checkbox" class="filled-in" id="sinc-dv-cod-n3" checked="checked" />
                                           <label for="sinc-dv-cod-n3">Promociones</label>
                                         </p>
-                                    </li>
+                                    </li>-->
                                 </ul>
                             </div>
                         </div>
                     </div>
                     <div class="col s6"> 
-                        <a id="aceptarSincronizar" class="col s12 waves-effect waves-light btn-large">ACEPTAR</a>
-                    </div>
-                    <div class="col s6"> 
                         <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
+                    </div>
+                    <div class="col s6">
+                        <a id="aceptarSincronizar" class="col s12 waves-effect waves-light btn-large">ACEPTAR</a>
                     </div>
                 </div>
             </div>
@@ -331,6 +327,7 @@
                 <div class="col s12"> 
                     <form>
                         <input type="hidden" value="0" id="id-cliente-nv" >
+                        <input type="hidden" value="0" id="ruc-cliente-nv">
                         <div class="col s12">
                             <label> Razón social </label>
                             <input disabled class="margin-cero" type="text" id="razon-social-nv" name="razon-social-nv" value="Roinet SAC">
@@ -388,23 +385,7 @@
                                       <th data-field="price">Importe</th>
                                   </tr>
                                 </thead>
-
-                                <tbody id="cont-lst-prod-add">
-                                  <!--<tr>
-                                    <td><span class="delete-producto">X</span></td>
-                                    <td>Producto 1</td>
-                                    <td class="precio-select-dv"><span>800</span></td>
-                                    <td class="inputChico"><input type="number" value="10" style="text-align: right;"></td>
-                                    <td style="text-align: right;">808.7</td>
-                                  </tr>
-                                  <tr>
-                                    <td><span class="delete-producto">X</span></td>
-                                    <td>Producto 2</td>
-                                    <td class="precio-select-dv"><span >900</span><span class="nv-precio-style">850</span></td>
-                                    <td class="inputChico"><input type="number" value="8" style="text-align: right;"></td>
-                                    <td style="text-align: right;">305.45</td>
-                                  </tr>-->
-                                </tbody>
+                                <tbody id="cont-lst-prod-add"> </tbody>
                                 <tr style="background-color: #607D8B;color: white;">
                                     <td colspan="5" style="text-align:right; font-size:14px;letter-spacing: 0.1em;"><b>Total: </b><div id="precio-prod-imp-lst">0</div></td>
                                 </tr>
@@ -467,8 +448,9 @@
                               </div>
                             </div>
                             <div class="modal-footer">
-                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat" id="btn-cancelar-add-prod">CANCELAR</a>
                                 <a href="javascript:void(0)" id="btn-aceptar-add-prod" class="modal-action waves-effect waves-green btn-flat">ACEPTAR</a>
+                                <a href="javascript:void(0)" class="modal-action modal-close waves-effect waves-red btn-flat" id="btn-cancelar-add-prod">CANCELAR</a>
+                                
                             </div>
                         </div>
 
@@ -485,10 +467,10 @@
                         <div class="col s12" style="margin-bottom:10px;"> <div class="divider"></div></div>
                         <!--<div class="col s12"> -->
                         <div class="col s6"> 
-                            <a id="aceptarFrmVenta" class="col s12 waves-effect waves-light btn-large">ACEPTAR</a>
+                            <a id="cancelarFrmVenta" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
                         </div>
                         <div class="col s6"> 
-                            <a id="cancelarFrmVenta" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
+                            <a id="aceptarFrmVenta" class="col s12 waves-effect waves-light btn-large">ACEPTAR</a>
                         </div>
                         <!--</div>-->
                     </form>
@@ -504,9 +486,8 @@
         <div data-role="content" style="margin-top: 6px;">
             <div class="row">
                 <div class="col s12"> 
-                    <!--<form>-->
-                        <div class="col s12" >
-                            <!--<label> RUC </label>-->
+                    <!--<form id="frmNuevoCliente">-->
+                        <!--<div class="col s12" >
                             <p class="cont-rdb" style="padding-left: 0;">
                                 <input class="with-gap rdb-tipo-nc-doc" name="rdb-tipo-nc-doc" id="rdb-ruc-nc" type="radio" value="ruc" checked />
                                 <label for="rdb-ruc-nc">RUC</label>
@@ -515,7 +496,17 @@
                                 <input class="with-gap rdb-tipo-nc-doc" name="rdb-tipo-nc-doc" id="rdb-dni-nc"  type="radio" value="dni" />
                                 <label for="rdb-dni-nc">DNI</label>
                             </p>
-                            <input type="text" id="ruc-ncli" name="ruc-ncli" value="20948372810" placeholder="RUC / DNI">
+                            <input type="text" id="ruc-ncli" name="ruc-ncli" value="20948372810" maxlength="11" placeholder="RUC / DNI">
+                        </div>-->
+
+                        <div class="col s12" >
+                            <label> RUC / DNI </label>
+                            <input type="number" id="ndoc-ncli" name="ndoc-ncli" value="20374653643">
+                        </div>
+
+                        <div class="col s12" >
+                            <label> CLIENTE </label>
+                            <input type="text" id="cliente-ncli" name="cliente-ncli" value="Roinet SAC">
                         </div>
 
                         <div class="col s12" >
@@ -523,7 +514,15 @@
                             <input type="text" id="direccion-ncli" name="direccion-ncli" value="Calle Shell 343 Int 301">
                         </div>
 
-                        <div class="col s12 depen-dni" >
+                        <div class="input-field col s12">
+                            <select id="opcion-clase-cliente">
+                                <option value="0" selected>CLASE CLIENTE</option>
+                                <option value="1">CLIENTE FUERA DE RUTA</option>
+                                <option value="2">NUEVO CLIENTE</option>
+                            </select>
+                        </div>
+
+                        <!--<div class="col s12 depen-dni" >
                             <label> DNI </label>
                             <input type="number" id="contacto-ncli" name="dni-ncli" value="12345678" maxlength="8">
                         </div>
@@ -531,13 +530,14 @@
                         <div class="col s12" >
                             <label> CELULAR </label>
                             <input type="text" id="celular-ncli" name="celular-ncli" value="960090034">
+                        </div>-->
+
+                        <div class="col s6"> 
+                            <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
                         </div>
 
                         <div class="col s6"> 
                             <div id="agregarCliente" class="col s12 waves-effect waves-light btn-large">ACEPTAR</div>
-                        </div>
-                        <div class="col s6"> 
-                            <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
                         </div>
                     <!--</form>-->
                 </div>
@@ -554,7 +554,7 @@
                 <div class="col s12"> 
                     <div class="col s12" >
                         <div class="cont-vdes">
-                            <div class="cabecera-vdes">Opciones de busqueda</div>
+                            <div class="cabecera-vdes">Opciones de búsqueda</div>
                             <div class="cuerpo-vdes">
                                 <label> (NOMBRE/CODIGO) PRODUCTO </label>
                                 <input type="text" id="buscarAllProducto" name="buscarAllProducto" placeholder="buscar...">
@@ -572,10 +572,10 @@
                         </p>-->
                     </div>
                     <div class="col s6"> 
-                        <div id="aceptarBuscarProducto" class="col s12 waves-effect waves-light btn-large">ELEGIR</div>
+                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
                     </div>
                     <div class="col s6"> 
-                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
+                        <div id="aceptarBuscarProducto" class="col s12 waves-effect waves-light btn-large">ELEGIR</div>
                     </div>
                 </div>
             </div>
@@ -592,10 +592,15 @@
                     
                     <div class="col s12" >
                         <div class="cont-vdes">
-                            <div class="cabecera-vdes">Opciones de busqueda</div>
+                            <div class="cabecera-vdes">Opciones de búsqueda</div>
                             <div class="cuerpo-vdes" style="margin-top: 10px;">
-                                <label> (NOMBRE/CODIGO) EMPRESA </label>
-                                <input type="text" id="buscarAllCliente" name="buscarAllCliente" value="" placeholder="buscar...">
+                                <div class="col s9">
+                                    <label> (NOMBRE/CODIGO) EMPRESA </label>
+                                    <input type="text" id="buscarAllCliente" name="buscarAllCliente" value="" placeholder="buscar...">
+                                </div>
+                                <div class="col s3">
+                                    <div id="btnBuscarClieteNR" class="accent-color waves-effect" style="padding: 20%;"><i class="material-icons">search</i></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -606,7 +611,7 @@
                         <div id="btnVenderClienteNR" class="col s12 waves-effect waves-light btn-large">VENDER</div>
                     </div>-->
                     <div class="col s6"> 
-                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
+                        <a href="javascript:void(0)" id="btnCancelarBusquedaCliente" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
                     </div>
                 </div>
             </div>
@@ -632,9 +637,9 @@
                         </div>
                         <div class="cont-vdes ">
                             <div class="cabecera-vdes">Detalle de entrega</div>
-                            <div class="cuerpo-vdes cuerpo-vdes2">
-                                <ul>
-                                    <li>
+                            <div class="cuerpo-vdes cuerpo-vdes2" >
+                                <ul id="contFacturaDespacho">
+                                    <!--<li>
                                         <p>
                                           <input type="checkbox" class="filled-in" id="fac-dv-cod-n1" checked="checked" />
                                           <label for="fac-dv-cod-n1">F0001837 <span class="pagoCredito"></span></label>
@@ -647,12 +652,12 @@
                                           <label for="fac-dv-cod-n2">F0001839<span class="pagoContado"></span></label>
                                         </p>
                                         <span class="precio-fac-dpc">S/ 180700.00</span>
-                                    </li>
+                                    </li>-->
                                 </ul>
                             </div>
                             <div class="pie-vdes">
                                 <div class="item-izq-vdes">Total</div>
-                                <div class="item-der-vdes">S/303030.00</div>
+                                <div class="item-der-vdes" id="totalFacturaDespacho">S/303030.00</div>
                             </div>
                         </div>
                         <div class="cont-vdes" >
@@ -707,10 +712,10 @@
                         </div>
                     </div>
                     <div class="col s6"> 
-                        <div id="aceptarDespacho" class="col s12 waves-effect waves-light btn-large">ENTREGADO</div>
+                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
                     </div>
                     <div class="col s6"> 
-                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
+                        <div id="aceptarDespacho" class="col s12 waves-effect waves-light btn-large">ENTREGADO</div>
                     </div>
                 </div>
             </div>
@@ -883,10 +888,10 @@
                         </div>
                     </div>
                     <div class="col s6"> 
-                        <div id="aceptarDespacho" class="col s12 waves-effect waves-light btn-large">ACEPTAR</div>
+                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
                     </div>
                     <div class="col s6"> 
-                        <a data-rel="back" class="col s12 waves-effect waves-light btn-large">CANCELAR</a>
+                        <div id="aceptarDespacho" class="col s12 waves-effect waves-light btn-large">ACEPTAR</div>
                     </div>
                 </div>
             </div>
