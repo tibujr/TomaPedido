@@ -144,7 +144,7 @@ $(document).ready(function (){
 				error: function(dataR){
 					cerrarAlerta();
 					if( localStorage.getItem('primer_login') == true || localStorage.getItem('primer_login') == "true"){
-						alert( JSON.stringify( dataR ));
+						alert( webService+"Login :" + JSON.stringify( dataR ));
 						//Materialize.toast('Error L00002. Problemas de conexion con el servidor login().', 5000);
 						return false;
 					}else{
